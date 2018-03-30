@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:english_words/english_words.dart';
-import 'model/row.dart';
+import 'package:intl/intl.dart';
+//import 'package:sqflite/sqflite.dart';
+import 'model/model.dart';
 
 void main() => runApp(new MyApp());
+
+final _biggerFont = const TextStyle(fontSize: 18.0);
 
 class MyApp extends StatelessWidget {
   @override
@@ -13,79 +15,58 @@ class MyApp extends StatelessWidget {
       theme: new ThemeData(
         primaryColor: Colors.white,
       ),
-      home: new RandomWords(),
+      home: new BulletTable(),
     );
   }
 }
 
-class RandomWords extends StatefulWidget {
+class BulletTable extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => new RandomWordsState();
+  State<StatefulWidget> createState() => new BulletTableState();
 }
 
-class RandomWordsState extends State<RandomWords> {
-  final _suggestions = <WordPair>[];
-  final _saved = new Set<WordPair>();
-  final _biggerFont = const TextStyle(fontSize: 18.0);
+class BulletTableState extends State<BulletTable> {
+  List<BulletRow> _rows;
+  // Unique set of dates we know about (for the column headers).
+  List<DateTime> _dates;
+  
+  final _formatter = new DateFormat(DateFormat.MONTH_DAY);
 
-  Widget _buildSuggestions() {
-    return new ListView.builder(
-      padding: const EdgeInsets.all(16.0),
-      itemBuilder: (context, ii) {
-        if (ii.isOdd) return new Divider();
-        final index = ii ~/ 2;
-        if (index >= _suggestions.length) {
-          _suggestions.addAll(generateWordPairs().take(10));
-        }
-        return _buildRow(_suggestions[index]);
-      },
+  BulletTableState() {
+    _rows = BulletRow.generateFakeRows();
+    _dates = _rows.map(
+      (r) => r.entries.map(
+        (e) => e.dateTime
+      )
+    ).expand((d) => d).toSet().toList();
+    _dates.sort();
+    print('dates.length: ' + _dates.length.toString());
+  }
+
+  Widget _buildTable() {
+    return new DataTable(
+      columns: _buildHeaderColumns(),
+      rows: _rows.map((r) => _buildRow(r)).toList(),
     );
   }
 
-  Widget _buildRow(WordPair pair) {
-    final alreadySaved = _saved.contains(pair);
-    return new ListTile(
-      title: new Text(
-        pair.asPascalCase,
-        style: _biggerFont,
-      ),
-      trailing: new Icon(
-        alreadySaved ? Icons.favorite : Icons.favorite_border,
-        color: alreadySaved ? Colors.red : null,
-      ),
-      onTap: () {
-        setState(() {
-          if (alreadySaved) {
-            _saved.remove(pair);
-          } else {
-            _saved.add(pair);
-          }
-        });
-      },
-    );
+  List<DataColumn> _buildHeaderColumns() {
+    return 
+      [new DataColumn(label: new Text(''))]
+        ..addAll(_dates.map((d) => new DataColumn(
+          label: new RotatedBox(
+            quarterTurns: 3,
+            child: new Text(_formatter.format(d), style: _biggerFont),
+          )
+        )
+      ).toList());
   }
 
-  void _pushSaved() {
-    Navigator.of(context).push(
-      new MaterialPageRoute(
-        builder: (context) {
-          final tiles = _saved.map(
-            (pair) {
-              return new ListTile(
-                title: new Text(pair.asPascalCase, style: _biggerFont),
-              );
-            },
-          );
-          final divided = ListTile.divideTiles(context: context, tiles: tiles).toList();
-          
-          return new Scaffold(
-            appBar: new AppBar(
-              title: new Text('Saved Suggestions'),
-            ),
-            body: new ListView(children: divided),
-          );
-        },
-      ),
+  DataRow _buildRow(BulletRow row) {
+    return new DataRow(
+      cells: [new DataCell(new Text(row.name, style: _biggerFont))]
+        ..addAll(row.entries.map((e) => 
+          new DataCell(new Text(e.value, style: _biggerFont))).toList()),
     );
   }
 
@@ -94,11 +75,8 @@ class RandomWordsState extends State<RandomWords> {
     return new Scaffold(
       appBar: new AppBar(
         title: new Text('Bullet Journal'),
-        actions: <Widget>[
-          new IconButton(icon: new Icon(Icons.list), onPressed: _pushSaved),
-        ],
       ),
-      body: _buildSuggestions(),
+      body: _buildTable(),
     );
   }
 }
