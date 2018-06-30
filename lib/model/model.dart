@@ -2,10 +2,23 @@
 
 // Represents a single row in the journal, e.g. "Hours slept" or "Coffee consumed".
 class BulletRow {
-  String name;
+  final String name;
   List<BulletEntry> entries;
-  BulletRow(this.name, this.entries);
+  final String comment;
+  BulletRow([this.name, this.entries, this.comment = ""]);
+}
 
+// A single entry in a row, with a date and value.
+// TODO: this is OK for a pretty sparse matrix, but eventually want a better representation
+// for a table like this.
+class BulletEntry {
+  final String value;
+  final DateTime dateTime;
+  final String comment;
+  BulletEntry([this.value, this.dateTime, this.comment = ""]);
+}
+
+class BulletModelUtils {
   static List<BulletRow> generateFakeRows() {
     final List<DateTime> d = 
       [
@@ -46,13 +59,4 @@ class BulletRow {
       ),
     ];
   }
-}
-
-// A single entry in a row, with a date and value.
-// TODO: this is OK for a pretty sparse matrix, but eventually want a better representation
-// for a table like this.
-class BulletEntry {
-  String value;
-  DateTime dateTime;
-  BulletEntry(this.value, this.dateTime);
-}
+} // class BulletModelUtils

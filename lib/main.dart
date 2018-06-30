@@ -33,7 +33,7 @@ class BulletTableState extends State<BulletTable> {
   final _formatter = new DateFormat(DateFormat.MONTH_DAY);
 
   BulletTableState() {
-    _rows = BulletRow.generateFakeRows();
+    _rows = BulletModelUtils.generateFakeRows();
     _dates = _rows.map(
       (r) => r.entries.map(
         (e) => e.dateTime
