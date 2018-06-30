@@ -5,8 +5,6 @@ import 'model/model.dart';
 
 void main() => runApp(new MyApp());
 
-final _biggerFont = const TextStyle(fontSize: 18.0);
-
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -15,59 +13,28 @@ class MyApp extends StatelessWidget {
       theme: new ThemeData(
         primaryColor: Colors.white,
       ),
-      home: new BulletTable(),
+      home: new BulletHome(),
     );
   }
 }
 
-class BulletTable extends StatefulWidget {
+class BulletHome extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => new BulletTableState();
+  State<StatefulWidget> createState() => new BulletHomeState();
 }
 
-class BulletTableState extends State<BulletTable> {
+class BulletHomeState extends State<BulletHome> {
   List<BulletRow> _rows;
-  // Unique set of dates we know about (for the column headers).
-  List<DateTime> _dates;
+  List<BulletEntry> _recentEntries;
   
   final _formatter = new DateFormat(DateFormat.MONTH_DAY);
-
-  BulletTableState() {
+  
+  BulletHomeState() {
     _rows = BulletModelUtils.generateFakeRows();
-    _dates = _rows.map(
-      (r) => r.entries.map(
-        (e) => e.dateTime
-      )
-    ).expand((d) => d).toSet().toList();
-    _dates.sort();
-    print('dates.length: ' + _dates.length.toString());
-  }
-
-  Widget _buildTable() {
-    return new DataTable(
-      columns: _buildHeaderColumns(),
-      rows: _rows.map((r) => _buildRow(r)).toList(),
-    );
-  }
-
-  List<DataColumn> _buildHeaderColumns() {
-    return 
-      [new DataColumn(label: new Text(''))]
-        ..addAll(_dates.map((d) => new DataColumn(
-          label: new RotatedBox(
-            quarterTurns: 3,
-            child: new Text(_formatter.format(d), style: _biggerFont),
-          )
-        )
-      ).toList());
-  }
-
-  DataRow _buildRow(BulletRow row) {
-    return new DataRow(
-      cells: [new DataCell(new Text(row.name, style: _biggerFont))]
-        ..addAll(row.entries.map((e) => 
-          new DataCell(new Text(e.value, style: _biggerFont))).toList()),
-    );
+    _recentEntries = _rows.map(
+      (r) => r.entries
+    ).expand((e) => e).toSet().toList();
+    _recentEntries.sort((a, b) => b.dateTime.compareTo(a.dateTime));
   }
 
   @override
@@ -76,7 +43,55 @@ class BulletTableState extends State<BulletTable> {
       appBar: new AppBar(
         title: new Text('Bullet Journal'),
       ),
-      body: _buildTable(),
+      body: new Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: EdgeInsets.all(8.0),
+            child: Center(
+              child: RaisedButton(
+                onPressed: _pushNewEntry,
+                child: Text('New Entry'),
+              ),
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              padding: EdgeInsets.all(8.0),
+              itemCount: _recentEntries.length,
+              itemBuilder: (context, ii) {
+                return _buildRecentEntryRow(_recentEntries[ii]);
+              }
+            )
+          ),
+        ]
+      )
     );
+  }
+
+  Widget _buildRecentEntryRow(BulletEntry entry) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 2.0),
+      child: Row(
+        children: [
+          Container(
+            child: Text(_formatter.format(entry.dateTime)), 
+            padding: EdgeInsets.symmetric(horizontal: 8.0),
+            width: 100.0,
+          ),
+          Expanded(
+            child: Text(entry.rowName())
+          ),
+          Container(
+            child: Text(entry.value), 
+            padding: EdgeInsets.symmetric(horizontal: 8.0)
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _pushNewEntry() {
+    
   }
 }

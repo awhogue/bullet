@@ -15,7 +15,17 @@ class BulletEntry {
   final String value;
   final DateTime dateTime;
   final String comment;
+   // May be null
+   // TODO(ahogue): find a better way to point to the Row?
+  BulletRow row;
+
   BulletEntry([this.value, this.dateTime, this.comment = ""]);
+  
+  String rowName() {
+    // ? short circuits to null if row is null. 
+    // ?? returns left-hand side if non-null, right-hand side otherwise.
+    return this.row?.name ?? '';
+  }
 }
 
 class BulletModelUtils {
@@ -29,7 +39,7 @@ class BulletModelUtils {
         new DateTime(2018, 4, 2),
       ];
     
-    return [
+    List<BulletRow> rows = [
       new BulletRow('Coffee', 
         [
           new BulletEntry('3', d[0]),
@@ -57,6 +67,14 @@ class BulletModelUtils {
           new BulletEntry('', d[4]),
         ]
       ),
-    ];
+    ]; // List rows
+
+    for (var row in rows) {
+      for (var entry in row.entries) {
+        entry.row = row;
+      }
+    }
+
+    return rows;
   }
 } // class BulletModelUtils
