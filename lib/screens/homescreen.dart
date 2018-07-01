@@ -20,7 +20,7 @@ class BulletHomeState extends State<BulletHome> {
     _datastore = BulletDatastore.init();
 
     _recentEntries = _datastore.entries();
-    _recentEntries.sort((a, b) => b.dateTime.compareTo(a.dateTime));
+    _recentEntries.sort((a, b) => b.entryDate.compareTo(a.entryDate));
   }
 
   @override
@@ -61,7 +61,7 @@ class BulletHomeState extends State<BulletHome> {
       child: Row(
         children: [
           Container(
-            child: Text(_formatter.format(entry.dateTime)), 
+            child: Text(_formatter.format(entry.entryDate)), 
             padding: EdgeInsets.symmetric(horizontal: 8.0),
             width: 100.0,
           ),
