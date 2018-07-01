@@ -32,25 +32,31 @@ class NewBulletEntryState extends State<NewBulletEntry> {
       body: Container(
         child: Form(
           key: this._formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              DropdownButton<String>(
-                value: _enteredRow,
-                // value: // TOOD: set the default to the most recently created entry?
-                onChanged: (String newValue) {
-                  setState(() { _enteredRow = newValue; });
-                },
-                items: _datastore.rowNames().map((String rowName) => 
-                  DropdownMenuItem<String>(
-                    value: rowName,
-                    child: Text(rowName),
+          child: ListView(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            children: <Widget>[
+              InputDecorator(
+                decoration: const InputDecoration(
+                  labelText: 'Entry Type',
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    value: _enteredRow,
+                    // value: // TOOD: set the default to the most recently created entry?
+                    onChanged: (String newValue) {
+                      setState(() { _enteredRow = newValue; });
+                    },
+                    items: _datastore.rowNames().map((String rowName) => 
+                      DropdownMenuItem<String>(
+                        value: rowName,
+                        child: Text(rowName),
+                      ),
+                    ).toList(),
                   ),
-                ).toList(),
+                ),
               ),
               TextFormField(
                 decoration: InputDecoration(
-                  border: InputBorder.none,
                   labelText: 'Value:',
                 ),
                 validator: (value) {
@@ -69,7 +75,6 @@ class NewBulletEntryState extends State<NewBulletEntry> {
                   border: InputBorder.none,
                   labelText: 'Comment:',
                 ),
-                maxLines: 3,
                 onSaved: (String value) {
                   setState(() { _enteredComment = value; });
                 },
