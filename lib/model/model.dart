@@ -1,11 +1,12 @@
+import 'package:intl/intl.dart';
+
 // Models for the bullet journal.
 
 // Represents a single row in the journal, e.g. "Hours slept" or "Coffee consumed".
 class BulletRow {
   final String name;
-  List<BulletEntry> entries;
   final String comment;
-  BulletRow([this.name, this.entries, this.comment = ""]);
+  BulletRow([this.name, this.comment = ""]);
 }
 
 // A single entry in a row, with a date and value.
@@ -14,67 +15,16 @@ class BulletRow {
 class BulletEntry {
   final String value;
   final DateTime dateTime;
+  // TODO: Do we even need a BulletRow object? Or can we just have a string and handle
+  // it by `select where row='Foo'`? The only thing we'd lose is comments.
+  final BulletRow row;
   final String comment;
-   // May be null
-   // TODO(ahogue): find a better way to point to the Row?
-  BulletRow row;
 
-  BulletEntry([this.value, this.dateTime, this.comment = ""]);
-  
-  String rowName() {
-    // ? short circuits to null if row is null. 
-    // ?? returns left-hand side if non-null, right-hand side otherwise.
-    return this.row?.name ?? '';
+  BulletEntry([this.value, this.dateTime, this.row, this.comment = ""]);
+
+  final  _formatter = DateFormat(DateFormat.MONTH_DAY);
+  @override
+  String toString() {
+    return this.row.name + ': ' + this.value + ' (' + this._formatter.format(this.dateTime) + ')';
   }
 }
-
-class BulletModelUtils {
-  static List<BulletRow> generateFakeRows() {
-    final List<DateTime> d = 
-      [
-        new DateTime(2018, 3, 29),
-        new DateTime(2018, 3, 30),
-        new DateTime(2018, 3, 31),
-        new DateTime(2018, 4, 1),
-        new DateTime(2018, 4, 2),
-      ];
-    
-    List<BulletRow> rows = [
-      new BulletRow('Coffee', 
-        [
-          new BulletEntry('3', d[0]),
-          new BulletEntry('4', d[1]),
-          new BulletEntry('2', d[2]),
-          new BulletEntry('3', d[3]),
-          new BulletEntry('5', d[4]),
-        ]
-      ),
-      new BulletRow('Alcohol', 
-        [
-          new BulletEntry('0', d[0]),
-          new BulletEntry('0', d[1]),
-          new BulletEntry('2', d[2]),
-          new BulletEntry('5', d[3]),
-          new BulletEntry('0', d[4]),
-        ]
-      ),
-      new BulletRow('Work Out', 
-        [
-          new BulletEntry('X', d[0]),
-          new BulletEntry('', d[1]),
-          new BulletEntry('', d[2]),
-          new BulletEntry('X', d[3]),
-          new BulletEntry('', d[4]),
-        ]
-      ),
-    ]; // List rows
-
-    for (var row in rows) {
-      for (var entry in row.entries) {
-        entry.row = row;
-      }
-    }
-
-    return rows;
-  }
-} // class BulletModelUtils
