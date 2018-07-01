@@ -13,10 +13,19 @@ class NewBulletEntryState extends State<NewBulletEntry> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
-  // State entered by the user to create the new entry.
-  String _enteredRow;
+  // The selected Row name in the dropdown.
+  String _dropdownSelectedRow;
+  // Are we showing the "New Row" field?
+  bool _newRowVisible = false;
+  // The text entered in the "New Row" field, if visible.
+  String _enteredNewRow;
+  // The text entered in the "Value" field.
   String _enteredValue;
+  // The text entered in the "Comment" field.
   String _enteredComment;
+
+  // The text for the drop down for "New Row"
+  final String _newRowNameText = 'Add a new row';
 
   NewBulletEntryState() {
     _datastore = BulletDatastore.init();
@@ -38,15 +47,19 @@ class NewBulletEntryState extends State<NewBulletEntry> {
               InputDecorator(
                 decoration: const InputDecoration(
                   labelText: 'Entry Type',
+                  helperText: 'Choose an entry type',
                 ),
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton<String>(
-                    value: _enteredRow,
+                    value: _dropdownSelectedRow,
                     // value: // TOOD: set the default to the most recently created entry?
                     onChanged: (String newValue) {
-                      setState(() { _enteredRow = newValue; });
+                      setState(() { 
+                        _dropdownSelectedRow = newValue;
+                        _toggleNewRowField(newValue);
+                      });
                     },
-                    items: _datastore.rowNames().map((String rowName) => 
+                    items: _getRowNamesForDropdown().map((String rowName) => 
                       DropdownMenuItem<String>(
                         value: rowName,
                         child: Text(rowName),
@@ -55,9 +68,20 @@ class NewBulletEntryState extends State<NewBulletEntry> {
                   ),
                 ),
               ),
+              _newRowVisible ? TextFormField(
+                decoration: InputDecoration(
+                  labelText: 'New Entry Type',
+                ),
+                validator: (value) {}, // TODO: validate that this isn't a duplicate row name?
+                onSaved: (String value) {
+                  setState(() { 
+                    _enteredNewRow = value;
+                  });
+                },
+              ) : new Container(),
               TextFormField(
                 decoration: InputDecoration(
-                  labelText: 'Value:',
+                  labelText: 'Value',
                 ),
                 validator: (value) {
                   if (value.isEmpty) {
@@ -73,7 +97,7 @@ class NewBulletEntryState extends State<NewBulletEntry> {
               TextFormField(
                 decoration: InputDecoration(
                   border: InputBorder.none,
-                  labelText: 'Comment:',
+                  labelText: 'Comment',
                 ),
                 onSaved: (String value) {
                   setState(() { _enteredComment = value; });
@@ -90,6 +114,17 @@ class NewBulletEntryState extends State<NewBulletEntry> {
     );
   }
 
+  // Toggle the field to enter a new Row based on the dropdown selection.
+  void _toggleNewRowField(String dropdownValue) {
+    _newRowVisible = (dropdownValue == _newRowNameText);
+  }
+
+  List<String> _getRowNamesForDropdown() {
+    List<String> rowNames = _datastore.rowNames();
+    rowNames.add(_newRowNameText);
+    return rowNames;
+  }
+
   void _submitForm() {
     final FormState form = _formKey.currentState;
 
@@ -98,10 +133,12 @@ class NewBulletEntryState extends State<NewBulletEntry> {
     } else {
       form.save();
 
+      String rowName = _newRowVisible ? _enteredNewRow : _dropdownSelectedRow;
+
       BulletEntry entry = new BulletEntry(
         _enteredValue,
         DateTime.now(),
-        _enteredRow,
+        rowName,
         _enteredComment
       );
 
