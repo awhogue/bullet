@@ -17,22 +17,29 @@ class BulletEntry {
 
   BulletEntry([this.value, this.entryDate, this.rowName, this.comment = ""]);
 
-  BulletEntry.fromJson(Map<String, dynamic> json) 
-    : value = json['value'],
-      entryDate = DateTime.parse(json['dateTime'] as String),
-      rowName = json['rowName'],
-      comment = json['comment'];
-  
-  Map<String, dynamic> toJson() => 
-    { 
-      'value': value,
-      'entryDate': entryDate,
-      'rowName': rowName,
-      'comment': comment,
-    };
-
   @override
   String toString() {
     return this.rowName + ': ' + this.value + ' (' + this.entryDate.toIso8601String() + ')';
   }
+
+  BulletEntry.fromJson(Map<String, dynamic> json)
+    : value = json['value'],
+      entryDate = DateTime.parse(json['entryDate'] as String),
+      rowName = json['rowName'],
+      comment = json['comment'];
+
+  Map<String, dynamic> toJson() => 
+    { 
+      'value': value,
+      'entryDate': entryDate.toIso8601String(),
+      'rowName': rowName,
+      'comment': comment,
+    };
+
+  static List<BulletEntry> fromJsonList(Map<String, dynamic> json) {
+    return json['users'].map((Map<String, dynamic> entry) => BulletEntry.fromJson(entry)).toList();
+  }
+
+  static Map<String, dynamic> toJsonList(List<BulletEntry> entries) =>
+    { 'users': entries.map((entry) => entry.toJson()), };
 }
