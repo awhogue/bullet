@@ -101,7 +101,7 @@ class NewBulletEntryState extends State<NewBulletEntry> {
       BulletEntry entry = new BulletEntry(
         _enteredValue,
         DateTime.now(),
-        new BulletRow(_enteredRow),
+        _enteredRow,
         _enteredComment
       );
 

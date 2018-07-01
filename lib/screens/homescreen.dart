@@ -66,7 +66,7 @@ class BulletHomeState extends State<BulletHome> {
             width: 100.0,
           ),
           Expanded(
-            child: Text(entry.row.name),
+            child: Text(entry.rowName),
           ),
           Container(
             child: Text(entry.value), 

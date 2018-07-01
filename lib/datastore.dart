@@ -6,13 +6,13 @@ class BulletDatastore {
     return new BulletDatastore();
   }
 
-  List<BulletRow> rows() {
-    List<BulletEntry> entries = BulletDatastoreUtils.generateFakeEntries();
-    return entries.map((e) => e.row).toSet().toList();
-  }
+  // List<BulletRow> rows() {
+  //   List<BulletEntry> entries = BulletDatastoreUtils.generateFakeEntries();
+  //   return entries.map((e) => e.row).toSet().toList();
+  // }
 
   List<String> rowNames() {
-    List<String> rowNames = rows().map((r) => r.name).toSet().toList();
+    List<String> rowNames = BulletDatastoreUtils.generateFakeEntries().map((e) => e.rowName).toSet().toList();
     rowNames.sort();
     return rowNames;
   }
@@ -37,28 +37,22 @@ class BulletDatastoreUtils {
         new DateTime(2018, 4, 2),
       ];
     
-    List<BulletRow> rows = [
-      new BulletRow('Coffee'), 
-      new BulletRow('Alcohol'), 
-      new BulletRow('Work Out'),
-    ];
-
     return [
-      new BulletEntry('3', d[0], rows[0]),
-      new BulletEntry('4', d[1], rows[0]),
-      new BulletEntry('2', d[2], rows[0]),
-      new BulletEntry('3', d[3], rows[0]),
-      new BulletEntry('5', d[4], rows[0]),
-      new BulletEntry('0', d[0], rows[1]),
-      new BulletEntry('0', d[1], rows[1]),
-      new BulletEntry('2', d[2], rows[1]),
-      new BulletEntry('5', d[3], rows[1]),
-      new BulletEntry('0', d[4], rows[1]),
-      new BulletEntry('X', d[0], rows[2]),
-      new BulletEntry('', d[1], rows[2]),
-      new BulletEntry('', d[2], rows[2]),
-      new BulletEntry('X', d[3], rows[2]),
-      new BulletEntry('', d[4], rows[2]),
+      new BulletEntry('3', d[0], 'Coffee'),
+      new BulletEntry('4', d[1], 'Coffee'),
+      new BulletEntry('2', d[2], 'Coffee'),
+      new BulletEntry('3', d[3], 'Coffee'),
+      new BulletEntry('5', d[4], 'Coffee'),
+      new BulletEntry('0', d[0], 'Alcohol'),
+      new BulletEntry('0', d[1], 'Alcohol'),
+      new BulletEntry('2', d[2], 'Alcohol'),
+      new BulletEntry('5', d[3], 'Alcohol'),
+      new BulletEntry('0', d[4], 'Alcohol'),
+      new BulletEntry('X', d[0], 'Work Out'),
+      new BulletEntry('', d[1], 'Work Out'),
+      new BulletEntry('', d[2], 'Work Out'),
+      new BulletEntry('X', d[3], 'Work Out'),
+      new BulletEntry('', d[4], 'Work Out'),
     ];
   }
 } // class BulletDatastoreUtils

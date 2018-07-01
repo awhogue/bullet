@@ -10,21 +10,17 @@ class BulletRow {
 }
 
 // A single entry in a row, with a date and value.
-// TODO: this is OK for a pretty sparse matrix, but eventually want a better representation
-// for a table like this.
 class BulletEntry {
   final String value;
   final DateTime dateTime;
-  // TODO: Do we even need a BulletRow object? Or can we just have a string and handle
-  // it by `select where row='Foo'`? The only thing we'd lose is comments.
-  final BulletRow row;
+  // Just the name of the row, not an actual reference (until we need that).
+  final String rowName;
   final String comment;
 
-  BulletEntry([this.value, this.dateTime, this.row, this.comment = ""]);
+  BulletEntry([this.value, this.dateTime, this.rowName, this.comment = ""]);
 
-  final  _formatter = DateFormat(DateFormat.MONTH_DAY);
   @override
   String toString() {
-    return this.row.name + ': ' + this.value + ' (' + this._formatter.format(this.dateTime) + ')';
+    return this.rowName + ': ' + this.value + ' (' + this.dateTime.toIso8601String() + ')';
   }
 }
