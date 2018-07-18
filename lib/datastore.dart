@@ -1,58 +1,46 @@
+import 'dart:async';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'model/model.dart';
 
 // Abstract away the datastore for the bullet app and provide functions to retrieve data.
 class BulletDatastore {
-  static BulletDatastore init() {
-    return new BulletDatastore();
+  static const _entriesPrefsKey = 'BulletJournalEntriesKey';
+
+  List<BulletEntry> entries;
+
+  BulletDatastore(this.entries);
+
+  // Create a BulletDatastore initialized from SharedPreferences (or an empty one if it does not yet exist).
+  static Future<BulletDatastore> init() async {
+    final prefs = await SharedPreferences.getInstance();
+    String entriesJson = prefs.getString(_entriesPrefsKey) ?? '[]';
+    return new BulletDatastore(BulletEntry.fromJsonList(json.decode(entriesJson)));
   }
 
-  // List<BulletRow> rows() {
-  //   List<BulletEntry> entries = BulletDatastoreUtils.generateFakeEntries();
-  //   return entries.map((e) => e.row).toSet().toList();
-  // }
-
+  // The list of unique row names we know about.
   List<String> rowNames() {
-    List<String> rowNames = BulletDatastoreUtils.generateFakeEntries().map((e) => e.rowName).toSet().toList();
-    rowNames.sort();
-    return rowNames;
+    return entries.map((e) => e.rowName).toSet().toList();
   }
 
-  List<BulletEntry> entries() {
-    return BulletDatastoreUtils.generateFakeEntries();
+  // Entries in the datastore, sorted in reverse chronological order.
+  List<BulletEntry> recentEntries() {
+    var e = this.entries;
+    e.sort((a, b) => b.entryDate.compareTo(a.entryDate));
+    return e;
   }
 
-  void saveEntry(BulletEntry entry) {
-    print('Saving entry ' + entry.toString());
+  // Add a new entry to the datastore.
+  void addEntry(BulletEntry entry) {
+    print('Adding entry ' + entry.toString());
+    entries.add(entry);
+    _commit();
+  }
+
+  // Commit changes to SharedPreferences.
+  void _commit() async {
+    final prefs = await SharedPreferences.getInstance();
+    String entryJson = json.encode(entries);
+    prefs.setString(_entriesPrefsKey, entryJson);
   }
 }
-
-class BulletDatastoreUtils {
-  static List<BulletEntry> generateFakeEntries() {
-    final List<DateTime> d = 
-      [
-        new DateTime(2018, 3, 29),
-        new DateTime(2018, 3, 30),
-        new DateTime(2018, 3, 31),
-        new DateTime(2018, 4, 1),
-        new DateTime(2018, 4, 2),
-      ];
-    
-    return [
-      new BulletEntry('3', d[0], 'Coffee'),
-      new BulletEntry('4', d[1], 'Coffee'),
-      new BulletEntry('2', d[2], 'Coffee'),
-      new BulletEntry('3', d[3], 'Coffee'),
-      new BulletEntry('5', d[4], 'Coffee'),
-      new BulletEntry('0', d[0], 'Alcohol'),
-      new BulletEntry('0', d[1], 'Alcohol'),
-      new BulletEntry('2', d[2], 'Alcohol'),
-      new BulletEntry('5', d[3], 'Alcohol'),
-      new BulletEntry('0', d[4], 'Alcohol'),
-      new BulletEntry('X', d[0], 'Work Out'),
-      new BulletEntry('', d[1], 'Work Out'),
-      new BulletEntry('', d[2], 'Work Out'),
-      new BulletEntry('X', d[3], 'Work Out'),
-      new BulletEntry('', d[4], 'Work Out'),
-    ];
-  }
-} // class BulletDatastoreUtils

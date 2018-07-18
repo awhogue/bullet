@@ -12,16 +12,12 @@ class BulletHome extends StatefulWidget {
 class BulletHomeState extends State<BulletHome> {
   BulletDatastore _datastore;
 
-  List<BulletEntry> _recentEntries;
+  // Recently added entries, sorted in reverse chronological order.
+  List<BulletEntry> _recentEntries = List<BulletEntry>();
   
   final _formatter = DateFormat(DateFormat.MONTH_DAY);
-  
-  BulletHomeState() {
-    _datastore = BulletDatastore.init();
 
-    _recentEntries = _datastore.entries();
-    _recentEntries.sort((a, b) => b.entryDate.compareTo(a.entryDate));
-  }
+  BulletHomeState();
 
   @override
   Widget build(BuildContext context) {
@@ -29,32 +25,50 @@ class BulletHomeState extends State<BulletHome> {
       appBar: AppBar(
         title: Text('Bullet Journal'),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: EdgeInsets.all(8.0),
-            child: Center(
-              child: RaisedButton(
-                onPressed: _pushNewEntry,
-                child: Text('New Entry'),
-              ),
-            ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              padding: EdgeInsets.all(8.0),
-              itemCount: _recentEntries.length,
-              itemBuilder: (context, ii) {
-                return _buildRecentEntryRow(_recentEntries[ii]);
-              }
-            )
-          ),
-        ]
-      )
+      // TODO: refactor this database initialization / FutureBuilder into an InheritedWidget a la 
+      // https://stackoverflow.com/questions/46990200/flutter-how-to-pass-user-data-to-all-views
+      // https://docs.flutter.io/flutter/widgets/InheritedWidget-class.html
+      body: FutureBuilder<BulletDatastore>(
+        future: BulletDatastore.init(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) print(snapshot.error);
+          if (!snapshot.hasData) {
+            return Center(child: CircularProgressIndicator());
+          } else {
+            _datastore = snapshot.data;
+            _recentEntries = _datastore.recentEntries();
+            return Container(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(8.0),
+                    child: Center(
+                      child: RaisedButton(
+                        onPressed: _pushNewEntry,
+                        child: Text('New Entry'),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      padding: EdgeInsets.all(8.0),
+                      itemCount: _recentEntries.length,
+                      itemBuilder: (context, ii) {
+                        return _buildRecentEntryRow(_recentEntries[ii]);
+                      }
+                    )
+                  ),
+                ]
+              )
+            );
+          }
+        },
+      ),
     );
   }
 
+  // One row in the list of recently added entries.
   Widget _buildRecentEntryRow(BulletEntry entry) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 2.0),

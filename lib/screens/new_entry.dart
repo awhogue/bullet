@@ -27,9 +27,7 @@ class NewBulletEntryState extends State<NewBulletEntry> {
   // The text for the drop down for "New Row"
   final String _newRowNameText = 'Add a new row';
 
-  NewBulletEntryState() {
-    _datastore = BulletDatastore.init();
-  }
+  NewBulletEntryState();
 
   @override
   Widget build(BuildContext context) {
@@ -38,78 +36,89 @@ class NewBulletEntryState extends State<NewBulletEntry> {
       appBar: AppBar(
         title: Text('New Journal Entry'),
       ),
-      body: Container(
-        child: Form(
-          key: this._formKey,
-          child: ListView(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0),
-            children: <Widget>[
-              InputDecorator(
-                decoration: const InputDecoration(
-                  labelText: 'Entry Type',
-                  helperText: 'Choose an entry type',
-                ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: _dropdownSelectedRow,
-                    // value: // TOOD: set the default to the most recently created entry?
-                    onChanged: (String newValue) {
-                      setState(() { 
-                        _dropdownSelectedRow = newValue;
-                        _toggleNewRowField(newValue);
-                      });
-                    },
-                    items: _getRowNamesForDropdown().map((String rowName) => 
-                      DropdownMenuItem<String>(
-                        value: rowName,
-                        child: Text(rowName),
+      body: FutureBuilder<BulletDatastore>(
+        future: BulletDatastore.init(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) print(snapshot.error);
+          if (!snapshot.hasData) {
+            return Center(child: CircularProgressIndicator());
+          } else {
+            _datastore = snapshot.data;
+            return Container(
+              child: Form(
+                key: this._formKey,
+                child: ListView(
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  children: <Widget>[
+                    InputDecorator(
+                      decoration: const InputDecoration(
+                        labelText: 'Entry Type',
+                        helperText: 'Choose an entry type',
                       ),
-                    ).toList(),
-                  ),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          value: _dropdownSelectedRow,
+                          // value: // TOOD: set the default to the most recently created entry?
+                          onChanged: (String newValue) {
+                            setState(() { 
+                              _dropdownSelectedRow = newValue;
+                              _toggleNewRowField(newValue);
+                            });
+                          },
+                          items: _getRowNamesForDropdown().map((String rowName) => 
+                            DropdownMenuItem<String>(
+                              value: rowName,
+                              child: Text(rowName),
+                            ),
+                          ).toList(),
+                        ),
+                      ),
+                    ),
+                    _newRowVisible ? TextFormField(
+                      decoration: InputDecoration(
+                        labelText: 'New Entry Type',
+                      ),
+                      validator: (value) {}, // TODO: validate that this isn't a duplicate row name?
+                      onSaved: (String value) {
+                        setState(() { 
+                          _enteredNewRow = value;
+                        });
+                      },
+                    ) : new Container(),
+                    TextFormField(
+                      decoration: InputDecoration(
+                        labelText: 'Value',
+                      ),
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          // TODO: validate against the expected type (int, string, enumeration) of the value.
+                          return 'Please enter a value.';
+                        }
+                      },
+                      // keyboardType: TextInputType.number,  // TODO: switch this based on expected type of value.
+                      onSaved: (String value) {
+                        setState(() { _enteredValue = value; });
+                      },
+                    ),
+                    TextFormField(
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        labelText: 'Comment',
+                      ),
+                      onSaved: (String value) {
+                        setState(() { _enteredComment = value; });
+                      },
+                    ),
+                    RaisedButton(
+                      onPressed: _submitForm,
+                      child: Text('Create Entry'),
+                    ),
+                  ],
                 ),
               ),
-              _newRowVisible ? TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'New Entry Type',
-                ),
-                validator: (value) {}, // TODO: validate that this isn't a duplicate row name?
-                onSaved: (String value) {
-                  setState(() { 
-                    _enteredNewRow = value;
-                  });
-                },
-              ) : new Container(),
-              TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Value',
-                ),
-                validator: (value) {
-                  if (value.isEmpty) {
-                    // TODO: validate against the expected type (int, string, enumeration) of the value.
-                    return 'Please enter a value.';
-                  }
-                },
-                // keyboardType: TextInputType.number,  // TODO: switch this based on expected type of value.
-                onSaved: (String value) {
-                  setState(() { _enteredValue = value; });
-                },
-              ),
-              TextFormField(
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  labelText: 'Comment',
-                ),
-                onSaved: (String value) {
-                  setState(() { _enteredComment = value; });
-                },
-              ),
-              RaisedButton(
-                onPressed: _submitForm,
-                child: Text('Create Entry'),
-              ),
-            ],
-          ),
-        ),
+            );
+          }
+        },
       ),
     );
   }
@@ -143,7 +152,7 @@ class NewBulletEntryState extends State<NewBulletEntry> {
       );
 
       _showMessage('Saving entry...'); 
-      _datastore.saveEntry(entry);
+      _datastore.addEntry(entry);
 
       Navigator.pop(context);
     }
