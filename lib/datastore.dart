@@ -4,6 +4,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'model/model.dart';
 
 // Abstract away the datastore for the bullet app and provide functions to retrieve data.
+//
+// The main screen of the app should call init() to initialize the datastore asynchronously. 
+// All other screens should be able to just call the factory constructor and get the 
+// singleton instance.
 class BulletDatastore {
   // Singleton instance of the datastore itself that's shared by all screens.
   static BulletDatastore _datastore;
@@ -14,7 +18,8 @@ class BulletDatastore {
 
   BulletDatastore._internal(this._entries);
 
-  // Create a BulletDatastore initialized from SharedPreferences (or an empty one if it does not yet exist).
+  // Create a BulletDatastore initialized from SharedPreferences (or an empty one if it does 
+  // not yet exist).
   static Future<BulletDatastore> init() async {
     if (_datastore != null) {
       print('Called init() but BulletDatastore was already initialized');
