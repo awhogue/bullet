@@ -28,6 +28,8 @@ class BulletHomeState extends State<BulletHome> {
       // TODO: refactor this database initialization / FutureBuilder into an InheritedWidget a la 
       // https://stackoverflow.com/questions/46990200/flutter-how-to-pass-user-data-to-all-views
       // https://docs.flutter.io/flutter/widgets/InheritedWidget-class.html
+      // or maybe
+      // https://github.com/brianegan/scoped_model/blob/master/lib/scoped_model.dart
       body: FutureBuilder<BulletDatastore>(
         future: BulletDatastore.init(),
         builder: (context, snapshot) {
