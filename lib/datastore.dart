@@ -11,6 +11,8 @@ import 'model/model.dart';
 class BulletDatastore {
   // Singleton instance of the datastore itself that's shared by all screens.
   static BulletDatastore _datastore;
+  // Reference to SharedPreferences to be used for the life of the datastore.
+  static SharedPreferences _prefs;
 
   static const _entriesPrefsKey = 'BulletJournalEntriesKey';
 
@@ -26,7 +28,8 @@ class BulletDatastore {
       return _datastore;
     } else {
       final prefs = await SharedPreferences.getInstance();
-      String entriesJson = prefs.getString(_entriesPrefsKey) ?? '[]';
+      _prefs = prefs;
+      String entriesJson = _prefs.getString(_entriesPrefsKey) ?? '[]';
       _datastore = BulletDatastore._internal(BulletEntry.fromJsonList(json.decode(entriesJson)));
       return _datastore;
     }
@@ -60,10 +63,9 @@ class BulletDatastore {
   }
 
   // Commit changes to SharedPreferences.
-  void _commit() async {
-    final prefs = await SharedPreferences.getInstance();
+  void _commit() {
     String entryJson = json.encode(_entries);
-    prefs.setString(_entriesPrefsKey, entryJson);
+    _prefs.setString(_entriesPrefsKey, entryJson);
   }
 }
 
