@@ -38,4 +38,7 @@ void main() {
     var deser = BulletEntry.fromJsonList(json.decode('[]'));
     expect(deser.length, equals(0));
   });
+
+  // TODO: Test for BulletRow JSON
+  
 }

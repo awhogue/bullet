@@ -7,7 +7,7 @@ enum BulletRowDataType {
   // A numeric value, e.g. how many cups of coffee did I drink?
   Number,
   // A number that falls within a certain range, e.g. "Energy" on a scale of 0-10.
-  RangedNumber,
+  NumberRange,
   // A row that's just free text.
   FreeText,
   // TODO: add an "Enumeration" type that limits a row to one of a small set of values.
@@ -39,6 +39,73 @@ class BulletRow {
   // A comment for the row.
   final String comment;
   BulletRow([this.name, this.dataType, this.multiEntryType, this.units, this.comment = ""]);
+
+  static String dataTypeToUserString(BulletRowDataType dataType) {
+    switch (dataType) {
+      case BulletRowDataType.Checkmark:    return 'Checkmark';
+      case BulletRowDataType.Number:       return 'Number';
+      case BulletRowDataType.NumberRange:  return 'Number Range';
+      case BulletRowDataType.FreeText:     return 'Free Text';
+      default: 
+        print('Warning: unhandled BulletRowDataType in DataTypeString(): ' + dataType.toString());
+        return 'Unknown';
+    }
+  }
+
+  // Reverse BulletRowDataType.toString() (NOT dataTypeToUserString()).
+  // TODO: is there a way to use generics for this for any enum?
+  static BulletRowDataType dataTypeFromString(String input) {
+    for (BulletRowDataType t in BulletRowDataType.values) {
+      if (t.toString() == input) return t;
+    }
+    print('Warning: unhandled BulletRowDataType in dataTypeFromString(): ' + input);
+    return null;
+  }
+
+  static String multiEntryTypeToUserString(BulletRowMultiEntryType entryType) {
+    switch (entryType) {
+      case BulletRowMultiEntryType.Overwrite:  return 'Overwrite';
+      case BulletRowMultiEntryType.Accumulate: return 'Accumulate';
+      case BulletRowMultiEntryType.Separate:   return 'Separate';
+      default:
+        print('Warning: unhandled BulletRowMultiEntryType in MultiEntryTypeString(): ' + entryType.toString());
+        return 'Unknown';
+    }
+  }
+
+  // Reverse BulletRowDataType.toString() (NOT dataTypeToUserString()).
+  static BulletRowMultiEntryType multiEntryTypeFromString(String input) {
+    for (BulletRowMultiEntryType t in BulletRowMultiEntryType.values) {
+      if (t.toString() == input) return t;
+    }
+    print('Warning: unhandled BulletRowMultiEntryType in multiEntryTypeFromString(): ' + input);
+    return null;
+  }
+
+  @override
+  String toString() {
+    return this.name + ': ' + dataTypeToUserString(dataType) + ' ' + multiEntryTypeToUserString(multiEntryType) + ' in ' + units;
+  }
+
+  Map<String, dynamic> toJson() => 
+    { 
+      'name': name,
+      'dataType': dataType.toString(),
+      'multiEntryType': multiEntryType.toString(),
+      'units': units,
+      'comment': comment,
+    };
+
+  BulletRow.fromJson(Map<String, dynamic> json)
+    : name = json['name'],
+      dataType = BulletRow.dataTypeFromString(json['dataType']),
+      multiEntryType = BulletRow.multiEntryTypeFromString(json['multiEntryType']),
+      units = json['units'],
+      comment = json['comment'];
+
+  static List<BulletRow> fromJsonList(List<dynamic> json) {
+    return json.map<BulletRow>((entry) => BulletRow.fromJson(entry)).toList();
+  }
 }
 
 // A single entry in a row, with a date and value.
@@ -60,12 +127,6 @@ class BulletEntry {
     return this.rowName + ': ' + this.value + ' (' + this.entryDate.toIso8601String() + ')';
   }
 
-  BulletEntry.fromJson(Map<String, dynamic> json)
-    : value = json['value'],
-      entryDate = DateTime.parse(json['entryDate'] as String),
-      rowName = json['rowName'],
-      comment = json['comment'];
-
   Map<String, dynamic> toJson() => 
     { 
       'value': value,
@@ -73,6 +134,12 @@ class BulletEntry {
       'rowName': rowName,
       'comment': comment,
     };
+
+  BulletEntry.fromJson(Map<String, dynamic> json)
+    : value = json['value'],
+      entryDate = DateTime.parse(json['entryDate'] as String),
+      rowName = json['rowName'],
+      comment = json['comment'];
 
   static List<BulletEntry> fromJsonList(List<dynamic> json) {
     return json.map<BulletEntry>((entry) => BulletEntry.fromJson(entry)).toList();

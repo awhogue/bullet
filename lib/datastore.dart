@@ -15,10 +15,12 @@ class BulletDatastore {
   static SharedPreferences _prefs;
 
   static const _entriesPrefsKey = 'BulletJournalEntriesKey';
+  static const _rowsPrefsKey = 'BulletJournalRowsKey';
 
+  List<BulletRow> _rows;
   List<BulletEntry> _entries;
 
-  BulletDatastore._internal(this._entries);
+  BulletDatastore._internal(this._rows, this._entries);
 
   // Create a BulletDatastore initialized from SharedPreferences (or an empty one if it does 
   // not yet exist).
@@ -29,8 +31,14 @@ class BulletDatastore {
     } else {
       final prefs = await SharedPreferences.getInstance();
       _prefs = prefs;
+      
+      String rowsJson = _prefs.getString(_rowsPrefsKey) ?? '[]';
       String entriesJson = _prefs.getString(_entriesPrefsKey) ?? '[]';
-      _datastore = BulletDatastore._internal(BulletEntry.fromJsonList(json.decode(entriesJson)));
+      
+      _datastore = BulletDatastore._internal(
+        BulletRow.fromJsonList(json.decode(rowsJson)),
+        BulletEntry.fromJsonList(json.decode(entriesJson)),
+      );
       return _datastore;
     }
   }
@@ -45,7 +53,7 @@ class BulletDatastore {
   
   // The list of unique row names we know about.
   List<String> rowNames() {
-    return _entries.map((e) => e.rowName).toSet().toList();
+    return _rows.map((r) => r.name);
   }
 
   // Entries in the datastore, sorted in reverse chronological order.
@@ -62,8 +70,16 @@ class BulletDatastore {
     _commit();
   }
 
+  void addRow(BulletRow row) {
+    print('Adding row ' + row.toString());
+    _rows.add(row);
+    _commit();
+  }
+
   // Commit changes to SharedPreferences.
   void _commit() {
+    String rowsJson = json.encode(_rows);
+    _prefs.setString(_rowsPrefsKey, rowsJson);
     String entryJson = json.encode(_entries);
     _prefs.setString(_entriesPrefsKey, entryJson);
   }
