@@ -38,7 +38,7 @@ class BulletRow {
   final String units;
   // A comment for the row.
   final String comment;
-  BulletRow([this.name, this.units, this.comment = ""]);
+  BulletRow([this.name, this.dataType, this.multiEntryType, this.units, this.comment = ""]);
 }
 
 // A single entry in a row, with a date and value.
