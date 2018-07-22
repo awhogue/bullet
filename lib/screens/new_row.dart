@@ -94,7 +94,7 @@ class NewBulletRowState extends State<NewBulletRow> {
         RadioListTile<BulletRowDataType>(
           value: dataType,
           groupValue: _rowDataType,
-          title: Text(BulletRow.dataTypeString(dataType)),
+          title: Text(BulletRow.dataTypeToUserString(dataType)),
           onChanged: (value) {
             setState(() {
               _rowDataType = value;
@@ -121,7 +121,7 @@ class NewBulletRowState extends State<NewBulletRow> {
         RadioListTile<BulletRowMultiEntryType>(
           value: dataType,
           groupValue: _rowMultiEntryType,
-          title: Text(BulletRow.multiEntryTypeString(dataType)),
+          title: Text(BulletRow.multiEntryTypeToUserString(dataType)),
           onChanged: (value) {
             setState(() {
               _rowMultiEntryType = value;
