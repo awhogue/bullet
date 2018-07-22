@@ -84,7 +84,11 @@ class BulletRow {
 
   @override
   String toString() {
-    return this.name + ': ' + dataTypeToUserString(dataType) + ' ' + multiEntryTypeToUserString(multiEntryType) + ' in ' + units;
+    return 
+      this.name + ': ' + 
+      dataTypeToUserString(dataType) + ' ' + 
+      multiEntryTypeToUserString(multiEntryType) + 
+      (units.isEmpty ? ' in ' + units : ' (no units)');
   }
 
   Map<String, dynamic> toJson() => 

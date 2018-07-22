@@ -14,8 +14,11 @@ class BulletDatastore {
   // Reference to SharedPreferences to be used for the life of the datastore.
   static SharedPreferences _prefs;
 
-  static const _entriesPrefsKey = 'BulletJournalEntriesKey';
+  // Currently store entries and rows in separate prefs entries. May want
+  // to consider storing them in the same? Or if the data gets big, we may
+  // need to split them up for performance reasons?
   static const _rowsPrefsKey = 'BulletJournalRowsKey';
+  static const _entriesPrefsKey = 'BulletJournalEntriesKey';
 
   List<BulletRow> _rows;
   List<BulletEntry> _entries;
