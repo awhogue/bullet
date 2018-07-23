@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../model/model.dart';
 import '../datastore.dart';
+  import 'new_row.dart';
 
 class NewBulletEntry extends StatefulWidget {
   @override
@@ -15,19 +16,16 @@ class NewBulletEntryState extends State<NewBulletEntry> {
 
   // The selected Row name in the dropdown.
   String _dropdownSelectedRow;
-  // Are we showing the "New Row" field?
-  bool _newRowVisible = false;
-  // The text entered in the "New Row" field, if visible.
-  String _enteredNewRow;
   // The text entered in the "Value" field.
   String _enteredValue;
   // The text entered in the "Comment" field.
   String _enteredComment;
 
-  // The text for the drop down for "New Row"
-  final String _newRowNameText = 'Add a new row';
+  List<String> _rowNames;
 
-  NewBulletEntryState();
+  NewBulletEntryState() {
+    _rowNames = _datastore.rowNames();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,41 +40,34 @@ class NewBulletEntryState extends State<NewBulletEntry> {
           child: ListView(
             padding: const EdgeInsets.symmetric(horizontal: 10.0),
             children: <Widget>[
-              InputDecorator(
-                decoration: const InputDecoration(
-                  labelText: 'Entry Type',
-                  helperText: 'Choose an entry type',
-                ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: _dropdownSelectedRow,
-                    // value: // TOOD: set the default to the most recently created entry?
-                    onChanged: (String newValue) {
-                      setState(() { 
-                        _dropdownSelectedRow = newValue;
-                        _toggleNewRowField(newValue);
-                      });
-                    },
-                    items: _getRowNamesForDropdown().map((String rowName) => 
-                      DropdownMenuItem<String>(
-                        value: rowName,
-                        child: Text(rowName),
-                      ),
-                    ).toList(),
+              // Hide drop down if we have zero rows.
+              (_datastore.numRows() == 0) ?
+                Container() :
+                InputDecorator(
+                  decoration: const InputDecoration(
+                    labelText: 'Entry Type',
+                    helperText: 'Choose an entry type',
+                  ),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      value: _dropdownSelectedRow,
+                      // value: // TOOD: set the default to the most recently created entry?
+                      onChanged: (String newValue) {
+                        setState(() { _dropdownSelectedRow = newValue; });
+                      },
+                      items: _rowNames.map((String rowName) => 
+                        DropdownMenuItem<String>(
+                          value: rowName,
+                          child: Text(rowName),
+                        ),
+                      ).toList(),
+                    ),
                   ),
                 ),
+              RaisedButton(
+                onPressed: _pushNewRowScreen,
+                child: Text('Add a New Row Type'),
               ),
-              _newRowVisible ? TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'New Entry Type',
-                ),
-                validator: (value) {}, // TODO: validate that this isn't a duplicate row name?
-                onSaved: (String value) {
-                  setState(() { 
-                    _enteredNewRow = value;
-                  });
-                },
-              ) : new Container(),
               TextFormField(
                 decoration: InputDecoration(
                   labelText: 'Value',
@@ -112,15 +103,14 @@ class NewBulletEntryState extends State<NewBulletEntry> {
     );
   }
 
-  // Toggle the field to enter a new Row based on the dropdown selection.
-  void _toggleNewRowField(String dropdownValue) {
-    _newRowVisible = (dropdownValue == _newRowNameText);
-  }
-
-  List<String> _getRowNamesForDropdown() {
-    List<String> rowNames = _datastore.rowNames();
-    rowNames.add(_newRowNameText);
-    return rowNames;
+  void _pushNewRowScreen() {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => NewBulletRow()))
+      .then((newRowName) {
+        setState(() {
+          _dropdownSelectedRow = newRowName;
+          _rowNames = _datastore.rowNames();
+        });
+      });
   }
 
   void _submitForm() {
@@ -131,12 +121,10 @@ class NewBulletEntryState extends State<NewBulletEntry> {
     } else {
       form.save();
 
-      String rowName = _newRowVisible ? _enteredNewRow : _dropdownSelectedRow;
-
       BulletEntry entry = new BulletEntry(
         _enteredValue,
         DateTime.now(),
-        rowName,
+        _dropdownSelectedRow,
         _enteredComment
       );
 

@@ -47,7 +47,7 @@ class BulletHomeState extends State<BulletHome> {
                     padding: EdgeInsets.all(8.0),
                     child: Center(
                       child: RaisedButton(
-                        onPressed: _pushNewEntry,
+                        onPressed: _pushNewEntryScreen,
                         child: Text('New Entry'),
                       ),
                     ),
@@ -93,7 +93,7 @@ class BulletHomeState extends State<BulletHome> {
     );
   }
 
-  void _pushNewEntry() {
+  void _pushNewEntryScreen() {
     Navigator.push(context, MaterialPageRoute(builder: (context) => NewBulletEntry()));
   }
 }

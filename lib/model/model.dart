@@ -64,9 +64,9 @@ class BulletRow {
 
   static String multiEntryTypeToUserString(BulletRowMultiEntryType entryType) {
     switch (entryType) {
-      case BulletRowMultiEntryType.Overwrite:  return 'Overwrite';
-      case BulletRowMultiEntryType.Accumulate: return 'Accumulate';
-      case BulletRowMultiEntryType.Separate:   return 'Separate';
+      case BulletRowMultiEntryType.Overwrite:  return 'Overwriting';
+      case BulletRowMultiEntryType.Accumulate: return 'Accumulating';
+      case BulletRowMultiEntryType.Separate:   return 'Separating';
       default:
         print('Warning: unhandled BulletRowMultiEntryType in MultiEntryTypeString(): ' + entryType.toString());
         return 'Unknown';

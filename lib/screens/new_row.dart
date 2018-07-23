@@ -51,11 +51,39 @@ class NewBulletRowState extends State<NewBulletRow> {
                   setState(() { _rowName = value; });
                 },
               ),
-              Row(
-                children: _makeDataTypeRadioButtons(),
+              _makeRadioButtons<BulletRowDataType>(
+                label: 'Data type:',
+                values: BulletRowDataType.values,
+                selectedValue: _rowDataType,
+                onTap: (dataType) {
+                  setState(() {
+                    _rowDataType = dataType;
+                  });
+                },
+                dataTypeToString: (dataType) { return BulletRow.dataTypeToUserString(dataType); },
               ),
-              Row(
-                children: _makeMultiEntryRadioButtons(),
+              _makeRadioButtons<BulletRowMultiEntryType>(
+                label: 'Handle multiple entries by:',
+                values: BulletRowMultiEntryType.values,
+                selectedValue: _rowMultiEntryType,
+                onTap: (dataType) {
+                  setState(() {
+                    _rowMultiEntryType = dataType;
+                  });
+                },
+                shouldShowButton: (dataType) {
+                  // Skip entry types that are incompatible with each other.
+                  // Can't "accumulate" entries that are boolean checkmarks or ranged numbers.
+                  if ((_rowDataType == BulletRowDataType.Checkmark || 
+                       _rowDataType == BulletRowDataType.NumberRange) &&
+                      dataType == BulletRowMultiEntryType.Accumulate) {
+                    // Clear the existing type so we don't accidentally save it.
+                    _rowMultiEntryType = null;
+                    return false;
+                  }
+                  return true;
+                },
+                dataTypeToString: (dataType) { return BulletRow.multiEntryTypeToUserString(dataType); },
               ),
               TextFormField(
                 decoration: InputDecoration(
@@ -87,50 +115,75 @@ class NewBulletRowState extends State<NewBulletRow> {
     );
   }
 
-  List<RadioListTile> _makeDataTypeRadioButtons() {
-    List<RadioListTile> radios = new List();
-    for (BulletRowDataType dataType in BulletRowDataType.values) {
-      radios.add(
-        RadioListTile<BulletRowDataType>(
-          value: dataType,
-          groupValue: _rowDataType,
-          title: Text(BulletRow.dataTypeToUserString(dataType)),
-          onChanged: (value) {
-            setState(() {
-              _rowDataType = value;
-            });
-          },
-        )
-      );
-    }
-    return radios;
+  // Make one radio button for users to select an attribute of the row 
+  // (e.g. Data Type or Multi Entry Type).
+  Widget _makeRadioButton(String title, bool isSelected, Function onTap) {
+    return Container(
+      //margin: EdgeInsets.all(5.0),
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          padding: EdgeInsets.all(5.0),
+          decoration: new BoxDecoration(
+            border: new Border.all(color: Theme.of(context).dividerColor)
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 10.0),
+                child: Icon(
+                  isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+                  color: isSelected ? Theme.of(context).accentColor : Theme.of(context).buttonColor,
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 5.0),
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                  ),
+                ),
+              ),
+            ],  
+          ),
+        ),
+      ),
+    );
   }
 
-  List<RadioListTile> _makeMultiEntryRadioButtons() {
-    List<RadioListTile> radios = new List();
-    for (BulletRowMultiEntryType dataType in BulletRowMultiEntryType.values) {
-      // Skip entry types that are incompatible with each other.
-      // Can't "accumulate" entries that are boolean checkmarks or ranged numbers.
-      if ((_rowDataType == BulletRowDataType.Checkmark || 
-           _rowDataType == BulletRowDataType.NumberRange) &&
-          dataType == BulletRowMultiEntryType.Accumulate) {
-        continue;
-      }
+  // Make a set of radio buttons. 
+  // 'shouldShowButton' is a function to validate whether the given button should be visible or not given the current state.
+  Widget _makeRadioButtons<T>({
+    @required String label,
+    @required Function(T) onTap,
+    @required List<T> values,  // Have to do this because dart doesn't seem to handle T.values for an enum.
+    @required T selectedValue,
+    Function(T) shouldShowButton,
+    Function(T) dataTypeToString
+    }) {
 
-      radios.add(
-        RadioListTile<BulletRowMultiEntryType>(
-          value: dataType,
-          groupValue: _rowMultiEntryType,
-          title: Text(BulletRow.multiEntryTypeToUserString(dataType)),
-          onChanged: (value) {
-            setState(() {
-              _rowMultiEntryType = value;
-            });
-          },
-        )
-      );
+    List<Widget> radios = new List();
+    for (T dataType in values) {
+      if (shouldShowButton != null && !shouldShowButton(dataType)) continue;
+      radios.add(_makeRadioButton(
+        (dataTypeToString != null ? dataTypeToString(dataType) : dataType.toString()),
+        (dataType == selectedValue),
+        () => onTap(dataType)
+      ));
     }
-    return radios;
+
+    return InputDecorator(
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: Theme.of(context).textTheme.headline,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: radios,
+      ),
+    );
   }
 
   void _submitForm() {
@@ -149,10 +202,10 @@ class NewBulletRowState extends State<NewBulletRow> {
         _comment,
       );
 
-      _showMessage('Saving Row...'); 
+      _showMessage('Saving Row...');
       _datastore.addRow(row);
 
-      Navigator.pop(context);
+      Navigator.of(context).pop(_rowName);
     }
   }
 
@@ -160,3 +213,4 @@ class NewBulletRowState extends State<NewBulletRow> {
     _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(message)));
   }
 }
+

@@ -32,6 +32,7 @@ class BulletDatastore {
       print('Called init() but BulletDatastore was already initialized');
       return _datastore;
     } else {
+      print('Initializing BulletDatastore from SharedPreferences...');
       final prefs = await SharedPreferences.getInstance();
       _prefs = prefs;
       
@@ -42,6 +43,7 @@ class BulletDatastore {
         BulletRow.fromJsonList(json.decode(rowsJson)),
         BulletEntry.fromJsonList(json.decode(entriesJson)),
       );
+      print('Created BulletDatastore with ' + _datastore.numRows().toString() + ' rows and ' + _datastore.numEntries().toString() + ' entries');
       return _datastore;
     }
   }
@@ -54,9 +56,12 @@ class BulletDatastore {
     return _datastore;
   }
   
+  int numRows() { return _rows.length; }
+  int numEntries() { return _entries.length; }
+
   // The list of unique row names we know about.
   List<String> rowNames() {
-    return _rows.map((r) => r.name);
+    return _rows.map<String>((BulletRow r) => r.name).toList();
   }
 
   // Entries in the datastore, sorted in reverse chronological order.
