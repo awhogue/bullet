@@ -4,6 +4,7 @@ import '../model/model.dart';
 import '../datastore.dart';
 import 'new_entry.dart';
 import 'entry_detail.dart';
+import 'settings.dart';
 
 class BulletHome extends StatefulWidget {
   @override
@@ -25,6 +26,9 @@ class BulletHomeState extends State<BulletHome> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Bullet Journal'),
+        actions: [
+          IconButton(icon: Icon(Icons.settings), onPressed: _pushSettingsScreen),
+        ],
       ),
       body: FutureBuilder<BulletDatastore>(
         future: BulletDatastore.init(),
@@ -98,5 +102,9 @@ class BulletHomeState extends State<BulletHome> {
 
   void _pushEntryDetailScreen(BulletEntry entry) {
     Navigator.push(context, MaterialPageRoute(builder: (context) => BulletEntryDetail(entry)));
+  }
+
+  void _pushSettingsScreen() {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => BulletSettings()));
   }
 }

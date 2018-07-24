@@ -84,6 +84,13 @@ class BulletDatastore {
     _commit();
   }
 
+  void clear() {
+    print('Clearing datastore!');
+    _rows.clear();
+    _entries.clear();
+    _commit();
+  }
+
   // Commit changes to SharedPreferences.
   void _commit() {
     String rowsJson = json.encode(_rows);
