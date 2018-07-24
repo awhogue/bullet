@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import '../model/model.dart';
 import '../datastore.dart';
 import 'new_entry.dart';
+import 'entry_detail.dart';
 
 class BulletHome extends StatefulWidget {
   @override
@@ -15,7 +16,7 @@ class BulletHomeState extends State<BulletHome> {
   // Recently added entries, sorted in reverse chronological order.
   List<BulletEntry> _recentEntries = List<BulletEntry>();
   
-  final _formatter = DateFormat(DateFormat.MONTH_DAY);
+  final _formatter = new DateFormat.MMMMd();
 
   BulletHomeState();
 
@@ -25,11 +26,6 @@ class BulletHomeState extends State<BulletHome> {
       appBar: AppBar(
         title: Text('Bullet Journal'),
       ),
-      // TODO: refactor this database initialization / FutureBuilder into an InheritedWidget a la 
-      // https://stackoverflow.com/questions/46990200/flutter-how-to-pass-user-data-to-all-views
-      // https://docs.flutter.io/flutter/widgets/InheritedWidget-class.html
-      // or maybe
-      // https://github.com/brianegan/scoped_model/blob/master/lib/scoped_model.dart
       body: FutureBuilder<BulletDatastore>(
         future: BulletDatastore.init(),
         builder: (context, snapshot) {
@@ -72,28 +68,35 @@ class BulletHomeState extends State<BulletHome> {
 
   // One row in the list of recently added entries.
   Widget _buildRecentEntryRow(BulletEntry entry) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 2.0),
-      child: Row(
-        children: [
-          Container(
-            child: Text(_formatter.format(entry.entryDate)), 
-            padding: EdgeInsets.symmetric(horizontal: 8.0),
-            width: 100.0,
-          ),
-          Expanded(
-            child: Text(entry.rowName),
-          ),
-          Container(
-            child: Text(entry.value), 
-            padding: EdgeInsets.symmetric(horizontal: 8.0)
-          ),
-        ],
+    return GestureDetector(
+      onTap: () { _pushEntryDetailScreen(entry); },
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 2.0),
+        child: Row(
+          children: [
+            Container(
+              child: Text(_formatter.format(entry.entryDate)), 
+              padding: EdgeInsets.symmetric(horizontal: 8.0),
+              width: 100.0,
+            ),
+            Expanded(
+              child: Text(entry.rowName),
+            ),
+            Container(
+              child: Text(entry.value), 
+              padding: EdgeInsets.symmetric(horizontal: 8.0)
+            ),
+          ],
+        ),
       ),
     );
   }
 
   void _pushNewEntryScreen() {
     Navigator.push(context, MaterialPageRoute(builder: (context) => NewBulletEntry()));
+  }
+
+  void _pushEntryDetailScreen(BulletEntry entry) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => BulletEntryDetail(entry)));
   }
 }

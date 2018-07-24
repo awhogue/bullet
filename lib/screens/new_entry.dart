@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../model/model.dart';
 import '../datastore.dart';
-  import 'new_row.dart';
+import 'new_row.dart';
 
 class NewBulletEntry extends StatefulWidget {
   @override
