@@ -88,7 +88,7 @@ class BulletRow {
       this.name + ': ' + 
       dataTypeToUserString(dataType) + ' ' + 
       multiEntryTypeToUserString(multiEntryType) + 
-      (units.isEmpty ? ' in ' + units : ' (no units)');
+      (units.isEmpty ? ' (no units)' : ' in ' + units);
   }
 
   Map<String, dynamic> toJson() => 
