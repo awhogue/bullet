@@ -19,6 +19,7 @@ class BulletSettingsState extends State<BulletSettings> {
         title: Text('Bullet Journal Settings'),
       ),
       body: Container(
+        padding: EdgeInsets.symmetric(vertical: 10.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
