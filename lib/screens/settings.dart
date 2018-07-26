@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../datastore.dart';
 
@@ -32,6 +33,15 @@ class BulletSettingsState extends State<BulletSettings> {
                 ),
               ),
             ),
+            Container(
+              padding: EdgeInsets.all(8.0),
+              child: Center(
+                child: RaisedButton(
+                  onPressed: _datastore.debugLogDatastore,
+                  child: Text('Debug Log Datastore'),
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -40,36 +50,36 @@ class BulletSettingsState extends State<BulletSettings> {
 
   Future<Null> _promptClearDatastore() async {
     return showDialog<Null>(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Clear Journal?'),
-            content: SingleChildScrollView(
-              child: new ListBody(
-                children: <Widget>[
-                  Text('Really clear journal?'),
-                  Text('All data will be deleted!'),
-                ],
-              ),
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Clear Journal?'),
+          content: SingleChildScrollView(
+            child: new ListBody(
+              children: <Widget>[
+                Text('Really clear journal?'),
+                Text('All data will be deleted!'),
+              ],
             ),
-            actions: <Widget>[
-              FlatButton(
-                child: Text('Cancel'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-              FlatButton(
-                child: Text('OK'),
-                onPressed: () {
-                  _datastore.clear();
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            FlatButton(
+              child: Text('OK'),
+              onPressed: () {
+                _datastore.clear();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }

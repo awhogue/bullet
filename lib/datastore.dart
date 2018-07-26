@@ -18,12 +18,12 @@ class BulletDatastore {
   // to consider storing them in the same? Or if the data gets big, we may
   // need to split them up for performance reasons?
   static const _rowsPrefsKey = 'BulletJournalRowsKey';
-  static const _entriesPrefsKey = 'BulletJournalEntriesKey';
+  static const _daysPrefsKey = 'BulletJournalDaysKey';
 
   List<BulletRow> _rows;
-  List<BulletEntry> _entries;
+  List<BulletDay> _days;
 
-  BulletDatastore._internal(this._rows, this._entries);
+  BulletDatastore._internal(this._rows, this._days);
 
   // Create a BulletDatastore initialized from SharedPreferences (or an empty one if it does 
   // not yet exist).
@@ -37,11 +37,13 @@ class BulletDatastore {
       _prefs = prefs;
       
       String rowsJson = _prefs.getString(_rowsPrefsKey) ?? '[]';
-      String entriesJson = _prefs.getString(_entriesPrefsKey) ?? '[]';
+      String daysJson = _prefs.getString(_daysPrefsKey) ?? '[]';
       
+      List<BulletRow> rows = BulletRow.fromJsonList(json.decode(rowsJson));
+
       _datastore = BulletDatastore._internal(
-        BulletRow.fromJsonList(json.decode(rowsJson)),
-        BulletEntry.fromJsonList(json.decode(entriesJson)),
+        rows,
+        BulletDay.fromJsonList(json.decode(daysJson), rows),
       );
       print('Created BulletDatastore with ' + _datastore.numRows().toString() + ' rows and ' + _datastore.numEntries().toString() + ' entries');
       return _datastore;
@@ -57,7 +59,7 @@ class BulletDatastore {
   }
   
   int numRows() { return _rows.length; }
-  int numEntries() { return _entries.length; }
+  int numEntries() { return _days.length; }
 
   // The list of unique row names we know about.
   List<String> rowNames() {
@@ -65,16 +67,41 @@ class BulletDatastore {
   }
 
   // Entries in the datastore, sorted in reverse chronological order.
-  List<BulletEntry> recentEntries() {
-    var e = this._entries;
-    e.sort((a, b) => b.entryDate.compareTo(a.entryDate));
-    return e;
+  List<BulletDay> recentDays() {
+    var d = this._days;
+    d.sort((a, b) => b.entryDate.compareTo(a.entryDate)); // TODO: sub-sort alphabetically? By most recent entry?
+    return d;
   }
 
-  // Add a new entry to the datastore.
-  void addEntry(BulletEntry entry) {
+  // Given a day, return the row it's associated with, or throws an exception if that row does not exist.
+  BulletRow _rowForRowName(String rowName) {
+    for (var row in this._rows) {
+      if (row.name == rowName) {
+        return row;
+      }
+    }
+    throw new BulletDatastoreExcption('rowForDay could not find BulletRow with name "' + rowName);
+  }
+
+  // Add a new entry to the datastore. Creates the BulletDay if it doesn't already exist. 
+  // Throws an exception if the BulletRow doesn't already exist.
+  void addEntry(String rowName, BulletEntry entry) {
     print('Adding entry ' + entry.toString());
-    _entries.add(entry);
+
+    BulletRow row = _rowForRowName(rowName);
+
+    // Find the day, or create a new one.
+    BulletDay entryDay;
+    for (var day in this._days) {
+      if (entry.onDay(day) && day.row.name == rowName) {
+        entryDay = day;
+      }
+    }
+    if (entryDay == null) {
+      entryDay = new BulletDay(entry.entryDate, row, []);
+    }
+    entryDay.entries.add(entry);
+    _days.add(entryDay);
     _commit();
   }
 
@@ -87,7 +114,7 @@ class BulletDatastore {
   void clear() {
     print('Clearing datastore!');
     _rows.clear();
-    _entries.clear();
+    _days.clear();
     _commit();
   }
 
@@ -95,8 +122,14 @@ class BulletDatastore {
   void _commit() {
     String rowsJson = json.encode(_rows);
     _prefs.setString(_rowsPrefsKey, rowsJson);
-    String entryJson = json.encode(_entries);
-    _prefs.setString(_entriesPrefsKey, entryJson);
+    String entryJson = json.encode(_days);
+    _prefs.setString(_daysPrefsKey, entryJson);
+  }
+
+  static JsonEncoder encoder = new JsonEncoder.withIndent('  ');
+  void debugLogDatastore() {
+    print(encoder.convert(_rows));
+    print(encoder.convert(_days));
   }
 }
 

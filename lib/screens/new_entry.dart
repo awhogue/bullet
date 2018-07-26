@@ -124,12 +124,11 @@ class NewBulletEntryState extends State<NewBulletEntry> {
       BulletEntry entry = new BulletEntry(
         _enteredValue,
         DateTime.now(),
-        _dropdownSelectedRow,
         _enteredComment
       );
 
       _showMessage('Saving entry...'); 
-      _datastore.addEntry(entry);
+      _datastore.addEntry(_dropdownSelectedRow, entry);
 
       Navigator.pop(context);
     }

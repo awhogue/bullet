@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import '../model/model.dart';
 import '../datastore.dart';
 import 'new_entry.dart';
-import 'entry_detail.dart';
+import 'day_detail.dart';
 import 'settings.dart';
 
 class BulletHome extends StatefulWidget {
@@ -15,7 +15,7 @@ class BulletHomeState extends State<BulletHome> {
   BulletDatastore _datastore;
 
   // Recently added entries, sorted in reverse chronological order.
-  List<BulletEntry> _recentEntries = List<BulletEntry>();
+  List<BulletDay> _recentDays = List<BulletDay>();
   
   final _formatter = new DateFormat.MMMMd();
 
@@ -38,7 +38,7 @@ class BulletHomeState extends State<BulletHome> {
             return Center(child: CircularProgressIndicator());
           } else {
             _datastore = snapshot.data;
-            _recentEntries = _datastore.recentEntries();
+            _recentDays = _datastore.recentDays();
             return Container(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -55,9 +55,9 @@ class BulletHomeState extends State<BulletHome> {
                   Expanded(
                     child: ListView.builder(
                       padding: EdgeInsets.all(8.0),
-                      itemCount: _recentEntries.length,
+                      itemCount: _recentDays.length,
                       itemBuilder: (context, ii) {
-                        return _buildRecentEntryRow(_recentEntries[ii]);
+                        return _buildRecentDayRow(_recentDays[ii]);
                       }
                     )
                   ),
@@ -70,24 +70,24 @@ class BulletHomeState extends State<BulletHome> {
     );
   }
 
-  // One row in the list of recently added entries.
-  Widget _buildRecentEntryRow(BulletEntry entry) {
+  // One row in the list of recent day entries.
+  Widget _buildRecentDayRow(BulletDay day) {
     return GestureDetector(
-      onTap: () { _pushEntryDetailScreen(entry); },
+      onTap: () { _pushDayDetailScreen(day); },
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 2.0),
         child: Row(
           children: [
             Container(
-              child: Text(_formatter.format(entry.entryDate)), 
+              child: Text(_formatter.format(day.entryDate)), 
               padding: EdgeInsets.symmetric(horizontal: 8.0),
               width: 100.0,
             ),
             Expanded(
-              child: Text(entry.rowName),
+              child: Text(day.row.name),
             ),
             Container(
-              child: Text(entry.value), 
+              child: Text(BulletRow.valueForDay(day)), 
               padding: EdgeInsets.symmetric(horizontal: 8.0)
             ),
           ],
@@ -100,8 +100,8 @@ class BulletHomeState extends State<BulletHome> {
     Navigator.push(context, MaterialPageRoute(builder: (context) => NewBulletEntry()));
   }
 
-  void _pushEntryDetailScreen(BulletEntry entry) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => BulletEntryDetail(entry)));
+  void _pushDayDetailScreen(BulletDay day) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => BulletDayDetail(day)));
   }
 
   void _pushSettingsScreen() {
