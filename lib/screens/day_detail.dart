@@ -25,14 +25,19 @@ class BulletDayDetailState extends State<BulletDayDetail> {
       body: Container(
         padding: EdgeInsets.all(5.0),
         child: Column(
-          children: [
-            _buildKeyValueRow('Row:', widget.day.row.name),
-            _buildKeyValueRow('Date:', _dateFormatter.format(widget.day.entryDate)),
-            widget.day.entries.map((entry) => _buildEntryRow(entry)).toList(),
-          ].expand((i) => i).toList(),
+          children: _buildRows(),
         ),
       ),
     );
+  }
+
+  List<Widget> _buildRows() {
+    List<Widget> rows = [
+      _buildKeyValueRow('Row:', widget.day.row.name),
+      _buildKeyValueRow('Date:', _dateFormatter.format(widget.day.entryDate)),
+    ];
+    rows.addAll(widget.day.entries.map((entry) => _buildEntryRow(entry)));
+    return rows;
   }
 
   Widget _buildKeyValueRow(String key, String value) {
