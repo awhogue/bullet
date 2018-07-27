@@ -80,7 +80,7 @@ class BulletDatastore {
         return row;
       }
     }
-    throw new BulletDatastoreExcption('rowForDay could not find BulletRow with name "' + rowName);
+    throw new BulletDatastoreExcption('rowForRowName() could not find BulletRow with name "' + rowName);
   }
 
   // Add a new entry to the datastore. Creates the BulletDay if it doesn't already exist. 
@@ -99,9 +99,9 @@ class BulletDatastore {
     }
     if (entryDay == null) {
       entryDay = new BulletDay(entry.entryDate, row, []);
+      _days.add(entryDay);
     }
     entryDay.entries.add(entry);
-    _days.add(entryDay);
     _commit();
   }
 

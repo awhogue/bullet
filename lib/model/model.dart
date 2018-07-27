@@ -92,8 +92,15 @@ class BulletRow {
     switch(day.row.multiEntryType) {
       case BulletRowMultiEntryType.Overwrite:
         return day.lastEntry().value;
-      case BulletRowMultiEntryType.Accumulate:
+      case BulletRowMultiEntryType.Accumulate: {
+        switch(day.row.dataType) {
+          case BulletRowDataType.Number:  // fall through and treat all numbers the same.
+          case BulletRowDataType.NumberRange:
+            return day.entries.fold(0, (value, element) => value + int.parse(element.value)).toString();
+          default: break;  // compiler gets confused if we try to do the return here.
+        }
         return day.entries.fold('', (value, element) => value + element.value);
+      }
       case BulletRowMultiEntryType.Separate:
         return day.entries.map((e) => e.value).toList().join(',');
       default: {
