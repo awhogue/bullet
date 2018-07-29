@@ -87,8 +87,8 @@ class BulletHomeState extends State<BulletHome> {
               child: Text(day.row.name),
             ),
             Container(
-              child: Text(BulletRow.valueForDay(day)), 
-              padding: EdgeInsets.symmetric(horizontal: 8.0)
+              child: Text(BulletRow.valueForDay(day) + ' ' + day.row.units),
+              padding: EdgeInsets.symmetric(horizontal: 8.0),
             ),
           ],
         ),
