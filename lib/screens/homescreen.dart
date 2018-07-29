@@ -79,15 +79,24 @@ class BulletHomeState extends State<BulletHome> {
         child: Row(
           children: [
             Container(
-              child: Text(_formatter.format(day.entryDate)), 
+              child: Text(
+                _formatter.format(day.entryDate),
+                style: Theme.of(context).textTheme.subhead,
+              ),
               padding: EdgeInsets.symmetric(horizontal: 8.0),
               width: 100.0,
             ),
             Expanded(
-              child: Text(day.row.name),
+              child: Text(
+                day.row.name,
+                style: Theme.of(context).textTheme.subhead,
+              ),
             ),
             Container(
-              child: Text(BulletRow.valueForDay(day) + ' ' + day.row.units),
+              child: Text(
+                BulletRow.valueForDay(day) + ' ' + day.row.units,
+                style: Theme.of(context).textTheme.subhead,
+              ),
               padding: EdgeInsets.symmetric(horizontal: 8.0),
             ),
           ],

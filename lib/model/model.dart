@@ -105,7 +105,7 @@ class BulletRow {
         return day.entries.map((e) => e.value).toList().join(',');
       default: {
         print('Warning: unhandled BulletRowDataType in valueForDay(): ' + day.row.toString());
-        return 'Error';
+        return day.lastEntry().value;;
       }
     }
   }
