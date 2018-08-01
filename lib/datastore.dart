@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'model/model.dart';
+import 'model/bullet_day.dart';
+import 'model/bullet_row.dart';
 
 // Abstract away the datastore for the bullet app and provide functions to retrieve data.
 //

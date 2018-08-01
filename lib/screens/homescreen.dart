@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../model/model.dart';
+import '../model/bullet_day.dart';
+import '../model/bullet_row.dart';
 import '../datastore.dart';
 import 'new_entry.dart';
 import 'day_detail.dart';

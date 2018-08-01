@@ -1,6 +1,6 @@
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
-import '../model/model.dart';
+import '../model/bullet_day.dart';
 
 class BulletDayDetail extends StatefulWidget {
   final BulletDay day;

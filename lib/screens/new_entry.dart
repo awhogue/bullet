@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../model/model.dart';
+import '../model/bullet_day.dart';
 import '../datastore.dart';
 import 'new_row.dart';
 

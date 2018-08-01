@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:bullet/model/model.dart';
+import 'package:bullet/model/bullet_day.dart';
+import 'package:bullet/model/bullet_row.dart';
 
 void main() {
   var entry1 = BulletEntry('3', new DateTime(2018, 7, 1, 13, 29, 0), 'Worked on journal app');
