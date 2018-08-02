@@ -70,7 +70,7 @@ class BulletDatastore {
   // Entries in the datastore, sorted in reverse chronological order.
   List<BulletDay> recentDays() {
     var d = this._days;
-    d.sort((a, b) => b.entryDate.compareTo(a.entryDate)); // TODO: sub-sort alphabetically? By most recent entry?
+    d.sort((a, b) => b.time.compareTo(a.time)); // TODO: sub-sort alphabetically? By most recent entry?
     return d;
   }
 
@@ -99,7 +99,7 @@ class BulletDatastore {
       }
     }
     if (entryDay == null) {
-      entryDay = new BulletDay(entry.entryDate, row, []);
+      entryDay = new BulletDay(entry.time, row, []);
       _days.add(entryDay);
     }
     entryDay.entries.add(entry);

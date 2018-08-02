@@ -81,7 +81,7 @@ class BulletHomeState extends State<BulletHome> {
           children: [
             Container(
               child: Text(
-                _formatter.format(day.entryDate),
+                _formatter.format(day.time),
                 style: Theme.of(context).textTheme.subhead,
               ),
               padding: EdgeInsets.symmetric(horizontal: 8.0),
