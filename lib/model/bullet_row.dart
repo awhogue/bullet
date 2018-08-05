@@ -29,12 +29,12 @@ class BulletRow<V> {
 
   // Return a renderable value for a set of entries in one day of this row.
   String valueForDay(DateTime day) {
-    return _valueForEntries(entries.where(((e) => e.onDay(day))));
+    return _valueForEntries(entries.where(((e) => e.onDay(day))).toList());
   }
   String _valueForEntries(List<BulletEntry<V>> entries) {
     if (entries.isEmpty) return '';
     if (this.accumulate) {
-      return entries.fold(startValue, (value, element) => value + element).toString();
+      return entries.fold(startValue, (value, element) => value + element.value).toString();
     } else {
       return BulletEntry.lastValue(entries).value();
     }
