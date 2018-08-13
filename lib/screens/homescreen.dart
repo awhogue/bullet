@@ -74,7 +74,7 @@ class BulletHomeState extends State<BulletHome> {
     return GestureDetector(
       onTap: () { _pushDayDetailScreen(row); },
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 2.0),
+        padding: EdgeInsets.symmetric(vertical: 5.0),
         child: Row(
           children: [
             Expanded(

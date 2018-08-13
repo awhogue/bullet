@@ -22,7 +22,9 @@ class NewBulletRowState extends State<NewBulletRow> {
   // Shorthand to map user-visible types to String and int.
   RowType _type;
 
-  NewBulletRowState();
+  NewBulletRowState() {
+    _accumulate = true;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,32 +56,40 @@ class NewBulletRowState extends State<NewBulletRow> {
                 },
               ),
               Container(
-                child: Row(
-                  children: [
-                    RadioListTile<RowType>(
-                      title: const Text('Text'),
-                      value: RowType.Text,
-                      groupValue: _type,
-                      onChanged: (RowType value) { setState(() { _type = value; }); },
-                    ),
-                    RadioListTile<RowType>(
-                      title: const Text('Number'),
-                      value: RowType.Number,
-                      groupValue: _type,
-                      onChanged: (RowType value) { setState(() { _type = value; }); },
-                    ),
-                  ],
+                padding: const EdgeInsets.only(top: 10.0),
+                child: Text(
+                  'Row Type', 
+                  style: Theme.of(context).textTheme.subhead,
                 ),
               ),
               Container(
                 child: Row(
                   children: [
-                    CheckboxListTile(
-                      title: const Text('Accumulate?'),
-                      value: _accumulate,
-                      onChanged: (bool value) { setState(() { _accumulate = value; }); },
+                    Flexible(
+                      child: RadioListTile<RowType>(
+                        title: const Text('Text'),
+                        value: RowType.Text,
+                        groupValue: _type,
+                        onChanged: (RowType value) { setState(() { _type = value; }); },
+                      ),
+                    ),
+                    Flexible(
+                      child: RadioListTile<RowType>(
+                        title: const Text('Number'),
+                        value: RowType.Number,
+                        groupValue: _type,
+                        onChanged: (RowType value) { setState(() { _type = value; }); },
+                      ),
                     ),
                   ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.only(right: 150.0),
+                child: CheckboxListTile(
+                  title: const Text('Accumulate?'),
+                  value: _accumulate,
+                  onChanged: (bool value) { setState(() { _accumulate = value; }); },
                 ),
               ),
               TextFormField(
@@ -120,17 +130,11 @@ class NewBulletRowState extends State<NewBulletRow> {
     } else {
       form.save();
 
-      var startValue;
-      switch (_type) { 
-        case RowType.Text: startValue = ''; break;
-        case RowType.Number: startValue = 0; break;
-      }
-
       BulletRow row = new BulletRow(
         _rowName,
         [],
         _accumulate,
-        startValue,
+        _type,
         _units,
         _comment,
       );

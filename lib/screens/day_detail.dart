@@ -73,8 +73,11 @@ class BulletDayDetailState extends State<BulletDayDetail> {
               style: Theme.of(context).textTheme.body2
             ),
           ),
-          Expanded(
-            child: Text(entry.value, style: Theme.of(context).textTheme.body2),
+          Container(
+            child: Text(
+              entry.value.toString() + ' ' + widget.row.units,
+              style: Theme.of(context).textTheme.body2
+            ),
           ),
         ],
       ),

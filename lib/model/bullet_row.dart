@@ -61,7 +61,6 @@ class BulletRow<V> {
     return _valueForEntries(entries.where(((e) => e.onDay(day))).toList());
   }
   String _valueForEntries(List<BulletEntry<V>> entries) {
-    print('_valueForEntries(' + entries.toString() + ')');
     if (entries.isEmpty) return '';
     if (this.accumulate) {
       return entries.fold(startValue(), (value, element) => value + element.value).toString();
