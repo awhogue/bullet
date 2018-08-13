@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../model/model.dart';
+import '../model/bullet_row.dart';
 import '../datastore.dart';
 
 class NewBulletRow extends StatefulWidget {
@@ -15,12 +15,16 @@ class NewBulletRowState extends State<NewBulletRow> {
 
   // The following fields correspond to the BulletRow model fields.
   String _rowName;
-  BulletRowDataType _rowDataType;
-  BulletRowMultiEntryType _rowMultiEntryType;
+  bool _accumulate;
   String _units;
   String _comment;
 
-  NewBulletRowState();
+  // Shorthand to map user-visible types to String and int.
+  RowType _type;
+
+  NewBulletRowState() {
+    _accumulate = true;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,39 +55,42 @@ class NewBulletRowState extends State<NewBulletRow> {
                   setState(() { _rowName = value; });
                 },
               ),
-              _makeRadioButtons<BulletRowDataType>(
-                label: 'Data type:',
-                values: BulletRowDataType.values,
-                selectedValue: _rowDataType,
-                onTap: (dataType) {
-                  setState(() {
-                    _rowDataType = dataType;
-                  });
-                },
-                dataTypeToString: (dataType) { return BulletRow.dataTypeToUserString(dataType); },
+              Container(
+                padding: const EdgeInsets.only(top: 10.0),
+                child: Text(
+                  'Row Type', 
+                  style: Theme.of(context).textTheme.subhead,
+                ),
               ),
-              _makeRadioButtons<BulletRowMultiEntryType>(
-                label: 'Handle multiple entries by:',
-                values: BulletRowMultiEntryType.values,
-                selectedValue: _rowMultiEntryType,
-                onTap: (dataType) {
-                  setState(() {
-                    _rowMultiEntryType = dataType;
-                  });
-                },
-                shouldShowButton: (dataType) {
-                  // Skip entry types that are incompatible with each other.
-                  // Can't "accumulate" entries that are boolean checkmarks or ranged numbers.
-                  if ((_rowDataType == BulletRowDataType.Checkmark || 
-                       _rowDataType == BulletRowDataType.NumberRange) &&
-                      dataType == BulletRowMultiEntryType.Accumulate) {
-                    // Clear the existing type so we don't accidentally save it.
-                    _rowMultiEntryType = null;
-                    return false;
-                  }
-                  return true;
-                },
-                dataTypeToString: (dataType) { return BulletRow.multiEntryTypeToUserString(dataType); },
+              Container(
+                child: Row(
+                  children: [
+                    Flexible(
+                      child: RadioListTile<RowType>(
+                        title: const Text('Text'),
+                        value: RowType.Text,
+                        groupValue: _type,
+                        onChanged: (RowType value) { setState(() { _type = value; }); },
+                      ),
+                    ),
+                    Flexible(
+                      child: RadioListTile<RowType>(
+                        title: const Text('Number'),
+                        value: RowType.Number,
+                        groupValue: _type,
+                        onChanged: (RowType value) { setState(() { _type = value; }); },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.only(right: 150.0),
+                child: CheckboxListTile(
+                  title: const Text('Accumulate?'),
+                  value: _accumulate,
+                  onChanged: (bool value) { setState(() { _accumulate = value; }); },
+                ),
               ),
               TextFormField(
                 decoration: InputDecoration(
@@ -115,77 +122,6 @@ class NewBulletRowState extends State<NewBulletRow> {
     );
   }
 
-  // Make one radio button for users to select an attribute of the row 
-  // (e.g. Data Type or Multi Entry Type).
-  Widget _makeRadioButton(String title, bool isSelected, Function onTap) {
-    return Container(
-      //margin: EdgeInsets.all(5.0),
-      child: InkWell(
-        onTap: onTap,
-        child: Container(
-          padding: EdgeInsets.all(5.0),
-          decoration: new BoxDecoration(
-            border: new Border.all(color: Theme.of(context).dividerColor)
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Container(
-                padding: EdgeInsets.symmetric(vertical: 10.0),
-                child: Icon(
-                  isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
-                  color: isSelected ? Theme.of(context).accentColor : Theme.of(context).buttonColor,
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(vertical: 5.0),
-                child: Text(
-                  title,
-                  style: TextStyle(
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                  ),
-                ),
-              ),
-            ],  
-          ),
-        ),
-      ),
-    );
-  }
-
-  // Make a set of radio buttons. 
-  // 'shouldShowButton' is a function to validate whether the given button should be visible or not given the current state.
-  Widget _makeRadioButtons<T>({
-    @required String label,
-    @required Function(T) onTap,
-    @required List<T> values,  // Have to do this because dart doesn't seem to handle T.values for an enum.
-    @required T selectedValue,
-    Function(T) shouldShowButton,
-    Function(T) dataTypeToString
-    }) {
-
-    List<Widget> radios = new List();
-    for (T dataType in values) {
-      if (shouldShowButton != null && !shouldShowButton(dataType)) continue;
-      radios.add(_makeRadioButton(
-        (dataTypeToString != null ? dataTypeToString(dataType) : dataType.toString()),
-        (dataType == selectedValue),
-        () => onTap(dataType)
-      ));
-    }
-
-    return InputDecorator(
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: Theme.of(context).textTheme.headline,
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: radios,
-      ),
-    );
-  }
-
   void _submitForm() {
     final FormState form = _formKey.currentState;
 
@@ -196,8 +132,9 @@ class NewBulletRowState extends State<NewBulletRow> {
 
       BulletRow row = new BulletRow(
         _rowName,
-        _rowDataType,
-        _rowMultiEntryType,
+        [],
+        _accumulate,
+        _type,
         _units,
         _comment,
       );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../model/model.dart';
+import '../model/bullet_entry.dart';
+import '../model/bullet_row.dart';
 import '../datastore.dart';
 import 'new_row.dart';
 
@@ -121,7 +122,9 @@ class NewBulletEntryState extends State<NewBulletEntry> {
     } else {
       form.save();
 
-      BulletEntry entry = new BulletEntry(
+      BulletRow row = _datastore.rowForRowName(_dropdownSelectedRow);
+      BulletEntry entry = BulletRow.newEntryForType(
+        row.type, 
         _enteredValue,
         DateTime.now(),
         _enteredComment

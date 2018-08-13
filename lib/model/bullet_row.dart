@@ -1,0 +1,117 @@
+import 'bullet_entry.dart';
+
+// What type of row is this?
+enum RowType { 
+  Number, // => int
+  Text,   // => String
+}
+
+// A BulletRow models the semantic data for a single row within a journal,
+// e.g. 'Coffee' or 'Workout' or 'Sleep'.
+class BulletRow<V> {
+  // The name of the row, e.g. "Coffee" or "Sleep"
+  final String name;
+
+  // When a second value gets added to this row in the same day, do we 
+  // keep two separate entities, or accumulate them?
+  final bool accumulate;
+
+  // Type for this row. 
+  final RowType type;
+  
+  // What units is this row measured in, if any?
+  final String units;
+
+  // A comment for the row.
+  final String comment;
+
+  // List of entries for this row. 
+  // TODO: This obviously won't scale to a larger journal, will need a real database
+  // instead of just a list.
+  List<BulletEntry<V>> entries;
+
+  BulletRow([this.name, this.entries, this.accumulate, this.type, this.units = '', this.comment = '']);
+
+  // Factory to create a new BulletEntry using the right data type for the given RowType.
+  static BulletEntry newEntryForType(
+    RowType t,
+    String stringValue,
+    DateTime time,
+    String comment,
+  ) {
+    switch (t) {
+      case RowType.Number: return BulletEntry<int>(int.parse(stringValue), time, comment);
+      case RowType.Text: // Fall through to avoid compiler complaints.
+      default: return BulletEntry<String>(stringValue, time, comment);
+    }
+  }
+
+  // When accumulating a value in this row, what is the start value? E.g. for 
+  // a row with numbers, start with 0.
+  dynamic startValue() {
+    switch (type) {
+      case RowType.Number: return 0;
+      case RowType.Text:
+      default: return '';
+    }
+  }
+
+  // Return a renderable value for a set of entries in one day of this row.
+  String valueForDay(DateTime day) {
+    return _valueForEntries(entries.where(((e) => e.onDay(day))).toList());
+  }
+  String _valueForEntries(List<BulletEntry<V>> entries) {
+    if (entries.isEmpty) return '';
+    if (this.accumulate) {
+      return entries.fold(startValue(), (value, element) => value + element.value).toString();
+    } else {
+      return BulletEntry.lastValue(entries).value();
+    }
+  }
+
+  List<BulletEntry<V>> entriesForDay(DateTime day) {
+    return entries.where((e) => e.onDay(day));
+  }
+
+  @override
+  String toString() {
+    return this.name + ' (' + units + ')';
+  }
+
+  Map<String, dynamic> toJson() => 
+    { 
+      'name': name,
+      'entries': entries,
+      'accumulate': accumulate,
+      'type': type.toString(),
+      'units': units,
+      'comment': comment,
+    };
+
+  static RowType typeFromString(String type) {
+    switch (type) {
+      case 'Number': return RowType.Number;
+      case 'String':
+      default: return RowType.Text;
+    }
+  }
+  BulletRow.fromJson(Map<String, dynamic> json)
+    : name = json['name'],
+      entries = BulletEntry.fromJsonList(json['entries']),
+      accumulate = json['accumulate'],
+      type = typeFromString(json['type']),
+      units = json['units'],
+      comment = json['comment'];
+
+  static List<BulletRow> fromJsonList(List<dynamic> json) {
+    return json.map<BulletRow>((entry) => BulletRow.fromJson(entry)).toList();
+  }
+}
+
+// Simple pair of a BulletRow and a String.
+class RowString {
+  BulletRow row;
+  String value;
+  RowString(this.row, this.value);
+}
+
