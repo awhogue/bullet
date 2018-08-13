@@ -16,7 +16,7 @@ class BulletHomeState extends State<BulletHome> {
   BulletDatastore _datastore;
 
   // Recently added entries, sorted in reverse chronological order.
-  List<RowString> _currentDayRows = List<RowString>();
+  List<RowWithValue> _currentDayRowValues = List<RowWithValue>();
   // Currently set to today, but eventually will be UI-controlled
   DateTime _currentDay;
 
@@ -48,8 +48,8 @@ class BulletHomeState extends State<BulletHome> {
             return Center(child: CircularProgressIndicator());
           } else {
             _datastore = snapshot.data;
-            _currentDayRows = _datastore.rowValuesForDay(_currentDay);
-            print('Rendering Bullet Homescreen with ' + _currentDayRows.length.toString() + ' rows');
+            _currentDayRowValues = _datastore.rowValuesForDay(_currentDay);
+            print('Rendering Bullet Homescreen with ' + _currentDayRowValues.length.toString() + ' rows');
             
             return Container(
               child: Column(
@@ -75,10 +75,10 @@ class BulletHomeState extends State<BulletHome> {
                   ),
                   ListView.builder(
                     padding: EdgeInsets.all(8.0),
-                    itemCount: _currentDayRows.length,
+                    itemCount: _currentDayRowValues.length,
                     shrinkWrap: true,
                     itemBuilder: (context, ii) {
-                      return _buildDayRow(_currentDayRows[ii]);
+                      return _buildDayRow(_currentDayRowValues[ii]);
                     }
                   ),
                 ],
@@ -90,9 +90,21 @@ class BulletHomeState extends State<BulletHome> {
     );
   }
 
-  Widget _buildDayRow(RowString row) {
+  Widget _buildDayRow(RowWithValue row) {
+    Widget valueWidget = 
+      (row.value.isEmpty)
+      ? RaisedButton(
+        onPressed: () { _pushNewEntryScreen(row); },
+        child: Text('New', style: TextStyle(color: Colors.black)),
+      )
+      : Text(
+        row.row.valueForDay(_currentDay) + ' ' + row.row.units,
+        style: Theme.of(context).textTheme.subhead,
+      );
+
+
     return GestureDetector(
-      onTap: () { _pushDayDetailScreen(row); },
+      onTap: () { (row.value.isEmpty) ? _pushNewEntryScreen(row) : _pushDayDetailScreen(row); },
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 5.0),
         child: Row(
@@ -104,10 +116,7 @@ class BulletHomeState extends State<BulletHome> {
               ),
             ),
             Container(
-              child: Text(
-                row.row.valueForDay(_currentDay) + ' ' + row.row.units,
-                style: Theme.of(context).textTheme.subhead,
-              ),
+              child: valueWidget,
               padding: EdgeInsets.symmetric(horizontal: 8.0),
             ),
           ],
@@ -129,11 +138,11 @@ class BulletHomeState extends State<BulletHome> {
     }
   }
 
-  void _pushNewEntryScreen() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => NewBulletEntry()));
+  void _pushNewEntryScreen([RowWithValue row]) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => NewBulletEntry(row)));
   }
 
-  void _pushDayDetailScreen(RowString row) {
+  void _pushDayDetailScreen(RowWithValue row) {
     Navigator.push(context, MaterialPageRoute(builder: (context) => BulletDayDetail(row.row, _currentDay)));
   }
 

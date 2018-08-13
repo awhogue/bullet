@@ -5,6 +5,9 @@ import '../datastore.dart';
 import 'new_row.dart';
 
 class NewBulletEntry extends StatefulWidget {
+  final RowWithValue rowValue;
+  NewBulletEntry([this.rowValue]);
+
   @override
   State<StatefulWidget> createState() => NewBulletEntryState();
 }
@@ -30,6 +33,9 @@ class NewBulletEntryState extends State<NewBulletEntry> {
 
   @override
   Widget build(BuildContext context) {
+    if (null != widget.rowValue) { 
+      _dropdownSelectedRow = widget.rowValue.row.name; 
+    }
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(

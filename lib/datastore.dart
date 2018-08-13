@@ -64,11 +64,11 @@ class BulletDatastore {
   }
 
   // Entries in the datastore for a given day.
-  List<RowString> rowValuesForDay(DateTime day) {
-    List<RowString> rowStrings = [];
+  List<RowWithValue> rowValuesForDay(DateTime day) {
+    List<RowWithValue> rowStrings = [];
     for (var row in _rows) {
       // TODO: skip rows that don't have a value for this day?
-      rowStrings.add(RowString(row, row.valueForDay(day)));
+      rowStrings.add(RowWithValue(row, row.valueForDay(day)));
     }
     return rowStrings;
   }
