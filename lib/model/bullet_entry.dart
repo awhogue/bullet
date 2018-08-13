@@ -19,6 +19,7 @@ class BulletEntry<T> {
 
   // The type of this entry. 
   // TODO: how to do reflection in dart for things like fromJson?
+  // TODO: or just switch to using RowType
   String type() { return value.runtimeType.toString(); }
 
   bool onDay(DateTime day) {

@@ -1,10 +1,12 @@
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
-import '../model/bullet_day.dart';
+import '../model/bullet_row.dart';
+import '../model/bullet_entry.dart';
 
 class BulletDayDetail extends StatefulWidget {
-  final BulletDay day;
-  BulletDayDetail(this.day);
+  final BulletRow row;
+  final DateTime day;
+  BulletDayDetail(this.row, this.day);
 
   @override
   State<StatefulWidget> createState() => BulletDayDetailState();
@@ -20,7 +22,7 @@ class BulletDayDetailState extends State<BulletDayDetail> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text('Day Entry Detail'),
+        title: Text('Row Detail'),
       ),
       body: Container(
         padding: EdgeInsets.all(5.0),
@@ -33,10 +35,10 @@ class BulletDayDetailState extends State<BulletDayDetail> {
 
   List<Widget> _buildRows() {
     List<Widget> rows = [
-      _buildKeyValueRow('Row:', widget.day.row.name),
-      _buildKeyValueRow('Date:', _dateFormatter.format(widget.day.time)),
+      _buildKeyValueRow('Row:', widget.row.name),
+      _buildKeyValueRow('Date:', _dateFormatter.format(widget.day)),
     ];
-    rows.addAll(widget.day.entries.map((entry) => _buildEntryRow(entry)));
+    rows.addAll(widget.row.entries.map((entry) => _buildEntryRow(entry)));
     return rows;
   }
 

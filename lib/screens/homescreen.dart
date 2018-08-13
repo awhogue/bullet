@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import '../model/bullet_day.dart';
 import '../model/bullet_row.dart';
 import '../datastore.dart';
 import 'new_entry.dart';
@@ -16,9 +14,9 @@ class BulletHomeState extends State<BulletHome> {
   BulletDatastore _datastore;
 
   // Recently added entries, sorted in reverse chronological order.
-  List<BulletDay> _recentDays = List<BulletDay>();
-  
-  final _formatter = new DateFormat.MMMMd();
+  List<RowString> _currentDayRows = List<RowString>();
+  // Currently set to today, but eventually will be UI-controlled
+  DateTime _currentDay = DateTime.now();
 
   BulletHomeState();
 
@@ -39,7 +37,7 @@ class BulletHomeState extends State<BulletHome> {
             return Center(child: CircularProgressIndicator());
           } else {
             _datastore = snapshot.data;
-            _recentDays = _datastore.recentDays();
+            _currentDayRows = _datastore.rowValuesForDay(_currentDay);
             return Container(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,9 +54,9 @@ class BulletHomeState extends State<BulletHome> {
                   Expanded(
                     child: ListView.builder(
                       padding: EdgeInsets.all(8.0),
-                      itemCount: _recentDays.length,
+                      itemCount: _currentDayRows.length,
                       itemBuilder: (context, ii) {
-                        return _buildRecentDayRow(_recentDays[ii]);
+                        return _buildCurrentDayRow(_currentDayRows[ii]);
                       }
                     )
                   ),
@@ -71,31 +69,23 @@ class BulletHomeState extends State<BulletHome> {
     );
   }
 
-  // One row in the list of recent day entries.
-  Widget _buildRecentDayRow(BulletDay day) {
+  // One row in the list of rows from the current day.
+  Widget _buildCurrentDayRow(RowString row) {
     return GestureDetector(
-      onTap: () { _pushDayDetailScreen(day); },
+      onTap: () { _pushDayDetailScreen(row); },
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 2.0),
         child: Row(
           children: [
-            Container(
-              child: Text(
-                _formatter.format(day.time),
-                style: Theme.of(context).textTheme.subhead,
-              ),
-              padding: EdgeInsets.symmetric(horizontal: 8.0),
-              width: 100.0,
-            ),
             Expanded(
               child: Text(
-                day.row.name,
+                row.row.name,
                 style: Theme.of(context).textTheme.subhead,
               ),
             ),
             Container(
               child: Text(
-                BulletRow.valueForDay(day) + ' ' + day.row.units,
+                row.row.valueForDay(_currentDay) + ' ' + row.row.units,
                 style: Theme.of(context).textTheme.subhead,
               ),
               padding: EdgeInsets.symmetric(horizontal: 8.0),
@@ -110,8 +100,8 @@ class BulletHomeState extends State<BulletHome> {
     Navigator.push(context, MaterialPageRoute(builder: (context) => NewBulletEntry()));
   }
 
-  void _pushDayDetailScreen(BulletDay day) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => BulletDayDetail(day)));
+  void _pushDayDetailScreen(RowString row) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => BulletDayDetail(row.row, _currentDay)));
   }
 
   void _pushSettingsScreen() {
