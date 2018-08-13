@@ -22,7 +22,7 @@ class BulletDayDetailState extends State<BulletDayDetail> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text('Row Detail'),
+        title: Text('Day Detail'),
       ),
       body: Container(
         padding: EdgeInsets.all(5.0),
