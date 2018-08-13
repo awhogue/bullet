@@ -29,6 +29,10 @@ class BulletHomeState extends State<BulletHome> {
           IconButton(icon: Icon(Icons.settings), onPressed: _pushSettingsScreen),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _pushNewEntryScreen,
+        child: Icon(Icons.add),
+      ),
       body: FutureBuilder<BulletDatastore>(
         future: BulletDatastore.init(),
         builder: (context, snapshot) {
@@ -39,28 +43,12 @@ class BulletHomeState extends State<BulletHome> {
             _datastore = snapshot.data;
             _currentDayRows = _datastore.rowValuesForDay(_currentDay);
             return Container(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(8.0),
-                    child: Center(
-                      child: RaisedButton(
-                        onPressed: _pushNewEntryScreen,
-                        child: Text('New Entry'),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: ListView.builder(
-                      padding: EdgeInsets.all(8.0),
-                      itemCount: _currentDayRows.length,
-                      itemBuilder: (context, ii) {
-                        return _buildCurrentDayRow(_currentDayRows[ii]);
-                      }
-                    )
-                  ),
-                ]
+              child: ListView.builder(
+                padding: EdgeInsets.all(8.0),
+                itemCount: _currentDayRows.length,
+                itemBuilder: (context, ii) {
+                  return _buildCurrentDayRow(_currentDayRows[ii]);
+                }
               )
             );
           }
