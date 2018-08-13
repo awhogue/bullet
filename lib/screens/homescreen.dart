@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../model/bullet_row.dart';
 import '../datastore.dart';
+import '../util.dart';
 import 'new_entry.dart';
 import 'day_detail.dart';
 import 'settings.dart';
@@ -16,9 +18,14 @@ class BulletHomeState extends State<BulletHome> {
   // Recently added entries, sorted in reverse chronological order.
   List<RowString> _currentDayRows = List<RowString>();
   // Currently set to today, but eventually will be UI-controlled
-  DateTime _currentDay = DateTime.now();
+  DateTime _currentDay;
 
-  BulletHomeState();
+  final _dateFormatter = new DateFormat.yMMMMEEEEd();
+
+  BulletHomeState() {
+    // TODO: rewind to the most recent day with data?
+    _currentDay = DateTime.now();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,13 +49,39 @@ class BulletHomeState extends State<BulletHome> {
           } else {
             _datastore = snapshot.data;
             _currentDayRows = _datastore.rowValuesForDay(_currentDay);
+            print('Rendering Bullet Homescreen with ' + _currentDayRows.length.toString() + ' rows');
+            
             return Container(
-              child: ListView.builder(
-                padding: EdgeInsets.all(8.0),
-                itemCount: _currentDayRows.length,
-                itemBuilder: (context, ii) {
-                  return _buildCurrentDayRow(_currentDayRows[ii]);
-                }
+              child: Column(
+                children: [
+                  Container(
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.symmetric(horizontal: 3.0, vertical: 10.0),
+                    child: Column(
+                      children: [
+                        Text(
+                          _dateFormatter.format(_currentDay),
+                          style: Theme.of(context).textTheme.headline,
+                        ),
+                        Container(
+                          padding: EdgeInsets.symmetric(vertical: 3.0),
+                          child: Text(
+                            _daysAgoText(),
+                            style: Theme.of(context).textTheme.title,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  ListView.builder(
+                    padding: EdgeInsets.all(8.0),
+                    itemCount: _currentDayRows.length,
+                    shrinkWrap: true,
+                    itemBuilder: (context, ii) {
+                      return _buildDayRow(_currentDayRows[ii]);
+                    }
+                  ),
+                ],
               )
             );
           }
@@ -57,8 +90,7 @@ class BulletHomeState extends State<BulletHome> {
     );
   }
 
-  // One row in the list of rows from the current day.
-  Widget _buildCurrentDayRow(RowString row) {
+  Widget _buildDayRow(RowString row) {
     return GestureDetector(
       onTap: () { _pushDayDetailScreen(row); },
       child: Container(
@@ -82,6 +114,19 @@ class BulletHomeState extends State<BulletHome> {
         ),
       ),
     );
+  }
+
+  String _daysAgoText() {
+    int daysAgo = BulletUtil.daysBeforeToday(_currentDay);
+    if (daysAgo == 0) { 
+      return 'Today'; 
+    } else {
+      return [
+        daysAgo.toString(), 
+        (daysAgo.abs() > 1) ? 'days' : 'day',
+        (daysAgo > 0) ? 'ago' : 'from now',
+      ].join(' ');
+    }
   }
 
   void _pushNewEntryScreen() {
