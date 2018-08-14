@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../model/bullet_row.dart';
-import '../datastore.dart';
-import '../util.dart';
+import 'package:bullet/model/bullet_row.dart';
+import 'package:bullet/datastore.dart';
+import 'package:bullet/util.dart';
 import 'new_entry.dart';
 import 'day_detail.dart';
 import 'settings.dart';
@@ -160,7 +160,7 @@ class BulletHomeState extends State<BulletHome> {
   }
 
   void _pushNewEntryScreen([RowWithValue row]) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => NewBulletEntry(row)));
+    Navigator.push(context, MaterialPageRoute(builder: (context) => NewBulletEntry(row.row)));
   }
 
   void _pushDayDetailScreen(RowWithValue row) {

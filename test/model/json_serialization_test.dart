@@ -47,6 +47,7 @@ void main() {
     var deser = BulletRow.fromJson(json.decode(ser));
     expect(TestData.codingRow.name, equals(deser.name));
     expect(TestData.codingRow.accumulate, equals(deser.accumulate));
+    expect(TestData.codingRow.type, equals(deser.type));
     expect(TestData.codingRow.units, equals(deser.units));
     expect(TestData.codingRow.comment, equals(deser.comment));
   });  
@@ -60,10 +61,12 @@ void main() {
     expect(deser.length, equals(2));
     expect(TestData.codingRow.name, equals(deser[0].name));
     expect(TestData.codingRow.accumulate, equals(deser[0].accumulate));
+    expect(TestData.codingRow.type, equals(deser[0].type));
     expect(TestData.codingRow.units, equals(deser[0].units));
     expect(TestData.codingRow.comment, equals(deser[0].comment));
     expect(TestData.workoutRow.name, equals(deser[1].name));
     expect(TestData.workoutRow.accumulate, equals(deser[1].accumulate));
+    expect(TestData.workoutRow.type, equals(deser[1].type));
     expect(TestData.workoutRow.units, equals(deser[1].units));
     expect(TestData.workoutRow.comment, equals(deser[1].comment));
   });

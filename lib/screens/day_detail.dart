@@ -1,7 +1,8 @@
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
-import '../model/bullet_row.dart';
-import '../model/bullet_entry.dart';
+import 'package:bullet/model/bullet_row.dart';
+import 'package:bullet/model/bullet_entry.dart';
+import 'package:bullet/screens/new_entry.dart';
 
 class BulletDayDetail extends StatefulWidget {
   final BulletRow row;
@@ -23,6 +24,10 @@ class BulletDayDetailState extends State<BulletDayDetail> {
       key: _scaffoldKey,
       appBar: AppBar(
         title: Text('${widget.row.name} (${widget.row.units})',),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _pushNewEntryScreen,
+        child: Icon(Icons.add),
       ),
       body: Container(
         child: Column(
@@ -69,5 +74,9 @@ class BulletDayDetailState extends State<BulletDayDetail> {
         ),
       ],
     );
+  }
+
+  void _pushNewEntryScreen() {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => NewBulletEntry(widget.row)));
   }
 }

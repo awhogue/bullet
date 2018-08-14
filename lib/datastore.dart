@@ -40,7 +40,8 @@ class BulletDatastore {
       List<BulletRow> rows = BulletRow.fromJsonList(json.decode(rowsJson));
 
       _datastore = BulletDatastore._internal(rows);
-      print('Created BulletDatastore with ' + _datastore.numRows().toString() + ' rows and ' + _datastore.numEntries().toString() + ' entries');
+      print('Created BulletDatastore with ${_datastore.numRows().toString()} rows and ${_datastore.numEntries().toString()} entries');
+      
       return _datastore;
     }
   }

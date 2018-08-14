@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../datastore.dart';
+import 'package:bullet/datastore.dart';
 
 class BulletSettings extends StatefulWidget {
   @override

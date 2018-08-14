@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../model/bullet_row.dart';
-import '../datastore.dart';
+import 'package:bullet/model/bullet_row.dart';
+import 'package:bullet/datastore.dart';
 
 class NewBulletRow extends StatefulWidget {
   @override

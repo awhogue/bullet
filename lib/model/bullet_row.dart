@@ -7,6 +7,13 @@ enum RowType {
   Text,   // => String
 }
 
+// Simple pair of a BulletRow and a String value.
+class RowWithValue {
+  BulletRow row;
+  String value;
+  RowWithValue(this.row, this.value);
+}
+
 // A BulletRow models the semantic data for a single row within a journal,
 // e.g. 'Coffee' or 'Workout' or 'Sleep'.
 class BulletRow<V> {
@@ -109,11 +116,7 @@ class BulletRow<V> {
     };
 
   static RowType typeFromString(String type) {
-    switch (type) {
-      case 'Number': return RowType.Number;
-      case 'String':
-      default: return RowType.Text;
-    }
+    return RowType.values.firstWhere((v) => v.toString() == type);
   }
   BulletRow.fromJson(Map<String, dynamic> json)
     : name = json['name'],
@@ -128,10 +131,4 @@ class BulletRow<V> {
   }
 }
 
-// Simple pair of a BulletRow and a String value.
-class RowWithValue {
-  BulletRow row;
-  String value;
-  RowWithValue(this.row, this.value);
-}
 
