@@ -81,7 +81,6 @@ class BulletHomeState extends State<BulletHome> {
                     shrinkWrap: true,
                     children: _currentDayRowValues.map((rv) => _buildDayRow(rv)).toList() + [Divider()],
                   ),
-                  Divider(),
                 ],
               )
             );
@@ -160,7 +159,11 @@ class BulletHomeState extends State<BulletHome> {
   }
 
   void _pushNewEntryScreen([RowWithValue row]) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => NewBulletEntry(row.row)));
+    if (null != row) {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => NewBulletEntry(row.row)));
+    } else {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => NewBulletEntry()));
+    }
   }
 
   void _pushDayDetailScreen(RowWithValue row) {
