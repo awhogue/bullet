@@ -59,10 +59,11 @@ class BulletRow<V> {
   // Return a renderable value for a set of entries in one day of this row.
   String valueForDay(DateTime day) {
     var value = _valueForEntries(entries.where(((e) => e.onDay(day))).toList());
-    print('[' + name + '].valueForDay(' + day.toString() + ') [' + entries.map((e) => e.value).toString() + '] => "' + value + '"');
+    print('[$name].valueForDay(${day.toString()}) [' + entries.map((e) => e.value).toString() + '] => "$value"');
     return value;
   }
   String _valueForEntries(List<BulletEntry<V>> entries) {
+    print('_valueForEntries($entries)');
     if (entries.isEmpty) return '';
     if (this.accumulate) {
       return entries.fold(startValue(), (value, element) => value + element.value).toString();
@@ -72,7 +73,7 @@ class BulletRow<V> {
   }
 
   List<BulletEntry<V>> entriesForDay(DateTime day) {
-    return entries.where((e) => e.onDay(day));
+    return entries.where((e) => e.onDay(day)).toList();
   }
 
   @override

@@ -41,7 +41,7 @@ class BulletDayDetailState extends State<BulletDayDetail> {
             ListView(
               padding: EdgeInsets.symmetric(horizontal: 32.0),
               shrinkWrap: true,
-              children: widget.row.entries.map((entry) => _buildEntryRow(entry)).toList() + [Divider()],
+              children: widget.row.entriesForDay(widget.day).map((entry) => _buildEntryRow(entry)).toList() + [Divider()],
             ),
           ],
         ),

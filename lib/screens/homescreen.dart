@@ -97,7 +97,7 @@ class BulletHomeState extends State<BulletHome> {
       (row.value.isEmpty) ?
       Text('') :
       Text(
-        row.row.valueForDay(_currentDay) + ' ' + row.row.units,
+        row.value + ' ' + row.row.units,
         style: Theme.of(context).textTheme.body1,
       );
 
