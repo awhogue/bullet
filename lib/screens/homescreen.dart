@@ -97,7 +97,7 @@ class BulletHomeState extends State<BulletHome> {
       (row.value.isEmpty) ?
       Text('') :
       Text(
-        row.value + ' ' + row.row.units,
+        '${row.value} ${row.row.unitsForValue(row.value)}',
         style: Theme.of(context).textTheme.body1,
       );
 

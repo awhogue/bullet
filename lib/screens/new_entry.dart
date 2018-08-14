@@ -49,7 +49,7 @@ class NewBulletEntryState extends State<NewBulletEntry> {
             children: <Widget>[
               // Hide drop down if we have zero rows.
               (_datastore.numRows() == 0) ?
-                Container() :
+                Container(padding: EdgeInsets.only(top: 12.0)) :
                 InputDecorator(
                   decoration: const InputDecoration(
                     labelText: 'Entry Type',

@@ -1,3 +1,4 @@
+import 'package:inflection/inflection.dart';
 import 'bullet_entry.dart';
 
 // What type of row is this?
@@ -63,7 +64,6 @@ class BulletRow<V> {
     return value;
   }
   String _valueForEntries(List<BulletEntry<V>> entries) {
-    print('_valueForEntries($entries)');
     if (entries.isEmpty) return '';
     if (this.accumulate) {
       return entries.fold(startValue(), (value, element) => value + element.value).toString();
@@ -76,9 +76,26 @@ class BulletRow<V> {
     return entries.where((e) => e.onDay(day)).toList();
   }
 
+  // Return a displayable string for this row's units for the given value, aware of pluralization 
+  // if this is a numeric value.
+  String unitsForValue(String value) {
+    print('unitsForValue($value) ($units, $type)');
+    switch (type) {
+      case RowType.Number: {
+        int intVal = int.parse(value);
+        if (intVal == 1) {
+          print('singularize');
+          return singularize(units);
+        }
+        return pluralize(units);
+      }
+      default: return units;
+    }
+  }
+
   @override
   String toString() {
-    return this.name + ' (' + units + ')';
+    return '$name ($units, $type)';
   }
 
   Map<String, dynamic> toJson() => 
