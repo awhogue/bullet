@@ -19,7 +19,7 @@ class NewBulletEntryState extends State<NewBulletEntry> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   // The selected Row name in the dropdown.
-  String _dropdownSelectedRow;
+  String _selectedRow;
   // The text entered in the "Value" field.
   String _enteredValue;
   // The text entered in the "Comment" field.
@@ -34,46 +34,57 @@ class NewBulletEntryState extends State<NewBulletEntry> {
   @override
   Widget build(BuildContext context) {
     if (null != widget.row) { 
-      _dropdownSelectedRow = widget.row.name; 
+      _selectedRow = widget.row.name; 
     }
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text('New Journal Entry'),
+        title: Text(
+          (null == _selectedRow) ? 'New Entry' : 'New $_selectedRow Entry',
+        ),
       ),
       body: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
         child: Form(
           key: this._formKey,
-          child: ListView(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0),
-            children: <Widget>[
-              // Hide drop down if we have zero rows.
-              (_datastore.numRows() == 0) ?
-                Container(padding: EdgeInsets.only(top: 12.0)) :
-                InputDecorator(
-                  decoration: const InputDecoration(
-                    labelText: 'Entry Type',
-                    helperText: 'Choose an entry type',
-                  ),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<String>(
-                      value: _dropdownSelectedRow,
-                      // value: // TOOD: set the default to the most recently created entry?
-                      onChanged: (String newValue) {
-                        setState(() { _dropdownSelectedRow = newValue; });
-                      },
-                      items: _rowNames.map((String rowName) => 
-                        DropdownMenuItem<String>(
-                          value: rowName,
-                          child: Text(rowName),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Container(
+                     // Hide drop down if we have zero rows.
+                    child: (_datastore.numRows() == 0) ?
+                      Expanded(child: Text('')) :
+                      InputDecorator(
+                        decoration: const InputDecoration(
+                          labelText: 'Row',
+                          helperText: 'Choose the row',
                         ),
-                      ).toList(),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            value: _selectedRow,
+                            // value: // TOOD: set the default to the most recently created entry?
+                            onChanged: (String newValue) {
+                              setState(() { _selectedRow = newValue; });
+                            },
+                            items: _rowNames.map((String rowName) => 
+                              DropdownMenuItem<String>(
+                                value: rowName,
+                                child: Text(rowName),
+                              ),
+                            ).toList(),
+                          ),
+                        ),
+                      ),
+                  ),
+                  Container(
+                    alignment: Alignment.centerRight,
+                    child: RaisedButton(
+                      onPressed: _pushNewRowScreen,
+                      child: Text('New Row'),
                     ),
                   ),
-                ),
-              RaisedButton(
-                onPressed: _pushNewRowScreen,
-                child: Text('Add a New Row Type'),
+                ],
               ),
               TextFormField(
                 decoration: InputDecoration(
@@ -114,7 +125,7 @@ class NewBulletEntryState extends State<NewBulletEntry> {
     Navigator.push(context, MaterialPageRoute(builder: (context) => NewBulletRow()))
       .then((newRowName) {
         setState(() {
-          _dropdownSelectedRow = newRowName;
+          _selectedRow = newRowName;
           _rowNames = _datastore.rowNames();
         });
       });
@@ -130,7 +141,7 @@ class NewBulletEntryState extends State<NewBulletEntry> {
     } else {
       form.save();
 
-      BulletRow row = _datastore.rowForRowName(_dropdownSelectedRow);
+      BulletRow row = _datastore.rowForRowName(_selectedRow);
       BulletEntry entry = BulletRow.newEntryForType(
         row.type, 
         _enteredValue,
@@ -139,7 +150,7 @@ class NewBulletEntryState extends State<NewBulletEntry> {
       );
 
       _showMessage('Saving entry...'); 
-      _datastore.addEntry(_dropdownSelectedRow, entry);
+      _datastore.addEntry(_selectedRow, entry);
 
       Navigator.pop(context);
     }

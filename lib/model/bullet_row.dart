@@ -86,12 +86,10 @@ class BulletRow<V> {
   // Return a displayable string for this row's units for the given value, aware of pluralization 
   // if this is a numeric value.
   String unitsForValue(String value) {
-    print('unitsForValue($value) ($units, $type)');
     switch (type) {
       case RowType.Number: {
         int intVal = int.parse(value);
         if (intVal == 1) {
-          print('singularize');
           return singularize(units);
         }
         return pluralize(units);
