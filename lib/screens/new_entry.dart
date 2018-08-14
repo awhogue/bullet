@@ -120,6 +120,8 @@ class NewBulletEntryState extends State<NewBulletEntry> {
       });
   }
 
+  // TODO: Consider using TextInputController? 
+  // https://flutterbyexample.com/forms-1-user-input
   void _submitForm() {
     final FormState form = _formKey.currentState;
 

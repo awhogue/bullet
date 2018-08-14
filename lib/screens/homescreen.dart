@@ -56,33 +56,30 @@ class BulletHomeState extends State<BulletHome> {
                 children: [
                   Container(
                     alignment: Alignment.center,
-                    padding: EdgeInsets.symmetric(horizontal: 3.0, vertical: 10.0),
+                    padding: EdgeInsets.only(top: 12.0),
                     child: Column(
                       children: [
                         Container(
-                          padding: EdgeInsets.only(top: 5.0),
+                          padding: EdgeInsets.symmetric(vertical: 12.0),
                           child: Text(
                             _dateFormatter.format(_currentDay),
                             style: Theme.of(context).textTheme.headline,
                           ),
                         ),
                         Container(
-                          padding: EdgeInsets.symmetric(vertical: 3.0),
+                          padding: EdgeInsets.only(bottom: 8.0),
                           child: Text(
                             _daysAgoText(),
-                            style: Theme.of(context).textTheme.title,
+                            style: Theme.of(context).textTheme.subhead,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  ListView.builder(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 2.0),
-                    itemCount: _currentDayRowValues.length,
+                  ListView(
+                    padding: EdgeInsets.symmetric(horizontal: 16.0),
                     shrinkWrap: true,
-                    itemBuilder: (context, ii) {
-                      return _buildDayRow(_currentDayRowValues[ii]);
-                    }
+                    children: _currentDayRowValues.map((rv) => _buildDayRow(rv)).toList() + [Divider()],
                   ),
                   Divider(),
                 ],
@@ -95,19 +92,29 @@ class BulletHomeState extends State<BulletHome> {
   }
 
   Widget _buildDayRow(RowWithValue row) {
+    // Render the value of the row only if it exists for this day.
     Widget valueWidget = 
-      (row.value.isEmpty)
-      ? 
-      IconButton(
-        onPressed: () { _pushNewEntryScreen(row); },
-        icon: new Icon(Icons.add),
-      )
-      : 
+      (row.value.isEmpty) ?
+      Text('') :
       Text(
         row.row.valueForDay(_currentDay) + ' ' + row.row.units,
-        style: Theme.of(context).textTheme.subhead,
+        style: Theme.of(context).textTheme.body1,
       );
 
+    // Render an add/edit button. 
+    // If the row has a value, the button edits the existing value.
+    // If the row does not yet have a value, the button adds an entry.
+    // TODO: if the row has an int value, this button should increment the value without needing to visit the edit screen.
+    Widget addEditButton =
+      (row.value.isEmpty) ?
+        IconButton(
+          onPressed: () { _pushNewEntryScreen(row); },
+          icon: new Icon(Icons.add),
+        ) :
+        IconButton(
+          onPressed: () { _pushDayDetailScreen(row); },
+          icon: new Icon(Icons.edit),
+        );
 
     return 
       Column(
@@ -116,18 +123,20 @@ class BulletHomeState extends State<BulletHome> {
           GestureDetector(
             onTap: () { (row.value.isEmpty) ? _pushNewEntryScreen(row) : _pushDayDetailScreen(row); },
             child: Container(
-              padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
               child: Row(
                 children: [
                   Expanded(
                     child: Text(
                       row.row.name,
-                      style: Theme.of(context).textTheme.subhead,
+                      style: Theme.of(context).textTheme.body1,
                     ),
                   ),
                   Container(
                     child: valueWidget,
                     padding: EdgeInsets.symmetric(horizontal: 8.0),
+                  ),
+                  Container(
+                    child: addEditButton,
                   ),
                 ],
               ),

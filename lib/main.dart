@@ -9,7 +9,17 @@ class MyApp extends StatelessWidget {
     return new MaterialApp(
       title: 'Bullet Journal',
       theme: new ThemeData(
-        primaryColor: Colors.white,
+        primaryColor: Colors.indigo,
+        accentColor: Colors.indigoAccent,
+        textTheme: Theme.of(context).textTheme.copyWith(
+          subhead: TextStyle(
+            fontSize: 16.0,
+            color: Colors.grey[900],
+          ),
+          body1: TextStyle(
+            fontSize: 18.0
+          ),
+        ),
       ),
       home: new BulletHome(),
     );

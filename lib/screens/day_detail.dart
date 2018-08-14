@@ -22,65 +22,52 @@ class BulletDayDetailState extends State<BulletDayDetail> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text('Day Detail'),
+        title: Text('${widget.row.name} (${widget.row.units})',),
       ),
       body: Container(
-        padding: EdgeInsets.all(5.0),
         child: Column(
-          children: _buildRows(),
+          children: [
+            Container(
+              alignment: Alignment.center,
+              padding: EdgeInsets.only(top: 12.0),
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 8.0),
+                child: Text(
+                  _dateFormatter.format(widget.day),
+                  style: Theme.of(context).textTheme.headline,
+                )
+              )
+            ),
+            ListView(
+              padding: EdgeInsets.symmetric(horizontal: 32.0),
+              shrinkWrap: true,
+              children: widget.row.entries.map((entry) => _buildEntryRow(entry)).toList() + [Divider()],
+            ),
+          ],
         ),
       ),
     );
   }
 
-  List<Widget> _buildRows() {
-    List<Widget> rows = [
-      _buildKeyValueRow('Row:', widget.row.name),
-      _buildKeyValueRow('Date:', _dateFormatter.format(widget.day)),
-    ];
-    rows.addAll(widget.row.entries.map((entry) => _buildEntryRow(entry)));
-    return rows;
-  }
-
-  Widget _buildKeyValueRow(String key, String value) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        children: [
-          Container(
-            width: 100.0,
-            padding: EdgeInsets.symmetric(horizontal: 8.0),
-            child: Text(key, style: Theme.of(context).textTheme.title),
-          ),
-          Expanded(
-            child: Text(value, style: Theme.of(context).textTheme.title),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildEntryRow(BulletEntry entry) {
-    return Container(
-      padding: EdgeInsets.fromLTRB(15.0, 8.0, 8.0, 8.0),
-      child: Row(
-        children: [
-          Container(
-            width: 100.0,
-            padding: EdgeInsets.symmetric(horizontal: 8.0),
-            child: Text(
+    return Column(
+      children: [
+        Divider(),
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                entry.value.toString(),
+                style: Theme.of(context).textTheme.body1,
+              ),
+            ),
+            Text(
               _timeFormatter.format(entry.time), 
-              style: Theme.of(context).textTheme.body2
+              style: Theme.of(context).textTheme.body1,
             ),
-          ),
-          Container(
-            child: Text(
-              entry.value.toString() + ' ' + widget.row.units,
-              style: Theme.of(context).textTheme.body2
-            ),
-          ),
-        ],
-      ),
+          ],
+        ),
+      ],
     );
   }
 }
