@@ -59,9 +59,12 @@ class BulletHomeState extends State<BulletHome> {
                     padding: EdgeInsets.symmetric(horizontal: 3.0, vertical: 10.0),
                     child: Column(
                       children: [
-                        Text(
-                          _dateFormatter.format(_currentDay),
-                          style: Theme.of(context).textTheme.headline,
+                        Container(
+                          padding: EdgeInsets.only(top: 5.0),
+                          child: Text(
+                            _dateFormatter.format(_currentDay),
+                            style: Theme.of(context).textTheme.headline,
+                          ),
                         ),
                         Container(
                           padding: EdgeInsets.symmetric(vertical: 3.0),
@@ -74,13 +77,14 @@ class BulletHomeState extends State<BulletHome> {
                     ),
                   ),
                   ListView.builder(
-                    padding: EdgeInsets.all(8.0),
+                    padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 2.0),
                     itemCount: _currentDayRowValues.length,
                     shrinkWrap: true,
                     itemBuilder: (context, ii) {
                       return _buildDayRow(_currentDayRowValues[ii]);
                     }
                   ),
+                  Divider(),
                 ],
               )
             );
@@ -93,36 +97,44 @@ class BulletHomeState extends State<BulletHome> {
   Widget _buildDayRow(RowWithValue row) {
     Widget valueWidget = 
       (row.value.isEmpty)
-      ? RaisedButton(
+      ? 
+      IconButton(
         onPressed: () { _pushNewEntryScreen(row); },
-        child: Text('New', style: TextStyle(color: Colors.black)),
+        icon: new Icon(Icons.add),
       )
-      : Text(
+      : 
+      Text(
         row.row.valueForDay(_currentDay) + ' ' + row.row.units,
         style: Theme.of(context).textTheme.subhead,
       );
 
 
-    return GestureDetector(
-      onTap: () { (row.value.isEmpty) ? _pushNewEntryScreen(row) : _pushDayDetailScreen(row); },
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 5.0),
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                row.row.name,
-                style: Theme.of(context).textTheme.subhead,
+    return 
+      Column(
+        children: [
+          Divider(),
+          GestureDetector(
+            onTap: () { (row.value.isEmpty) ? _pushNewEntryScreen(row) : _pushDayDetailScreen(row); },
+            child: Container(
+              padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      row.row.name,
+                      style: Theme.of(context).textTheme.subhead,
+                    ),
+                  ),
+                  Container(
+                    child: valueWidget,
+                    padding: EdgeInsets.symmetric(horizontal: 8.0),
+                  ),
+                ],
               ),
             ),
-            Container(
-              child: valueWidget,
-              padding: EdgeInsets.symmetric(horizontal: 8.0),
-            ),
-          ],
-        ),
-      ),
-    );
+          ),
+        ],
+      );
   }
 
   String _daysAgoText() {
