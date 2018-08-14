@@ -100,21 +100,6 @@ class BulletHomeState extends State<BulletHome> {
         style: Theme.of(context).textTheme.body1,
       );
 
-    // Render an add/edit button. 
-    // If the row has a value, the button edits the existing value.
-    // If the row does not yet have a value, the button adds an entry.
-    // TODO: if the row has an int value, this button should increment the value without needing to visit the edit screen.
-    Widget addEditButton =
-      (row.value.isEmpty) ?
-        IconButton(
-          onPressed: () { _pushNewEntryScreen(row); },
-          icon: new Icon(Icons.add),
-        ) :
-        IconButton(
-          onPressed: () { _pushDayDetailScreen(row); },
-          icon: new Icon(Icons.edit),
-        );
-
     return 
       Column(
         children: [
@@ -124,19 +109,34 @@ class BulletHomeState extends State<BulletHome> {
             child: Container(
               child: Row(
                 children: [
+                  // Name of the row.
                   Expanded(
                     child: Text(
                       row.row.name,
                       style: Theme.of(context).textTheme.body1,
                     ),
                   ),
+                  // Value for today.
                   Container(
                     child: valueWidget,
                     padding: EdgeInsets.symmetric(horizontal: 8.0),
                   ),
+                  // Edit the row (if there is an existing value)
                   Container(
-                    child: addEditButton,
+                    child: (row.value.isEmpty) ?
+                      Container() :
+                      IconButton(
+                        onPressed: () { _pushDayDetailScreen(row); },
+                        icon: new Icon(Icons.edit),
+                      ),
                   ),
+                  // Add an entry to the row.
+                  Container(
+                    child: IconButton(
+                      onPressed: () { _pushNewEntryScreen(row); },
+                      icon: new Icon(Icons.add),
+                    )
+                  )
                 ],
               ),
             ),
