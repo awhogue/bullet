@@ -56,7 +56,7 @@ class NewBulletRowState extends State<NewBulletRow> {
                 },
               ),
               Container(
-                padding: const EdgeInsets.only(top: 10.0),
+                padding: const EdgeInsets.only(top: 16.0),
                 child: Text(
                   'Row Type', 
                   style: Theme.of(context).textTheme.subhead,

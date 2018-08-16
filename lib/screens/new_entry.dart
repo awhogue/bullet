@@ -52,33 +52,36 @@ class NewBulletEntryState extends State<NewBulletEntry> {
               Row(
                 children: [
                   Container(
-                     // Hide drop down if we have zero rows.
+                    // Hide drop down if we have zero rows.
                     child: (_datastore.numRows() == 0) ?
                       Expanded(child: Text('')) :
-                      InputDecorator(
-                        decoration: const InputDecoration(
-                          labelText: 'Row',
-                          helperText: 'Choose the row',
-                        ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            value: _selectedRow,
-                            // value: // TOOD: set the default to the most recently created entry?
-                            onChanged: (String newValue) {
-                              setState(() { _selectedRow = newValue; });
-                            },
-                            items: _rowNames.map((String rowName) => 
-                              DropdownMenuItem<String>(
-                                value: rowName,
-                                child: Text(rowName),
-                              ),
-                            ).toList(),
+                      Expanded(
+                        child: InputDecorator(
+                          decoration: const InputDecoration(
+                            labelText: 'Row',
+                            helperText: 'Choose the row',
+                          ),
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              value: _selectedRow,
+                              // value: // TOOD: set the default to the most recently created entry?
+                              onChanged: (String newValue) {
+                                setState(() { _selectedRow = newValue; });
+                              },
+                              items: _rowNames.map((String rowName) => 
+                                DropdownMenuItem<String>(
+                                  value: rowName,
+                                  child: Text(rowName),
+                                ),
+                              ).toList(),
+                            ),
                           ),
                         ),
                       ),
                   ),
                   Container(
                     alignment: Alignment.centerRight,
+                    padding: EdgeInsets.only(left: 12.0),
                     child: RaisedButton(
                       onPressed: _pushNewRowScreen,
                       child: Text('New Row'),
@@ -101,18 +104,22 @@ class NewBulletEntryState extends State<NewBulletEntry> {
                   setState(() { _enteredValue = value; });
                 },
               ),
-              TextFormField(
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  labelText: 'Comment',
+              Flexible(
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    labelText: 'Comment',
+                  ),
+                  onSaved: (String value) {
+                    setState(() { _enteredComment = value; });
+                  },
                 ),
-                onSaved: (String value) {
-                  setState(() { _enteredComment = value; });
-                },
               ),
-              RaisedButton(
-                onPressed: _submitForm,
-                child: Text('Create Entry'),
+              Container(
+                padding: EdgeInsets.only(top: 16.0),
+                child: RaisedButton(
+                  onPressed: _submitForm,
+                  child: Text('Create Entry'),
+                ),
               ),
             ],
           ),

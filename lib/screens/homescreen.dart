@@ -76,6 +76,15 @@ class BulletHomeState extends State<BulletHome> {
                       ],
                     ),
                   ),
+                  (_currentDayRowValues.isEmpty) ?
+                  Container(
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.only(top: 100.0),
+                    child: Text(
+                      'No rows yet! Tap "+" to add one.',
+                      style: Theme.of(context).textTheme.subhead,
+                    )
+                  ) :
                   ListView(
                     padding: EdgeInsets.symmetric(horizontal: 16.0),
                     shrinkWrap: true,
