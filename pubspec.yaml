@@ -13,7 +13,8 @@ dependencies:
 
   shared_preferences: any
 
-  inflection: ^0.4.1
+  inflection: 
+    git: git://github.com/gmosx/dart-inflection.git
 
 dev_dependencies:
   flutter_test:
