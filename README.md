@@ -7,6 +7,6 @@ Keep track of daily activities like exercise, coffee consumption, sleep, and mor
 Mostly an excuse to play around with Flutter, personal data modeling, life logging, 
 encryption, data privacy, and journaling interfaces. Still very much a prototype.
 
-![homescreen](https://i.imgur.com/iULnvhj.png?1)
+![homescreen](https://i.imgur.com/UfSmAQbl.png?1)
 
-![row creation](https://i.imgur.com/baS2db1.png?1)
+![row creation](https://i.imgur.com/WcMmwaUl.png?1)
