@@ -1,4 +1,4 @@
-package com.example.bullet;
+package org.secondthought.bullet;
 
 import android.os.Bundle;
 
