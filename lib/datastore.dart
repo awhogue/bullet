@@ -64,14 +64,17 @@ class BulletDatastore {
     return _rows.map<String>((BulletRow r) => r.name).toList();
   }
 
-  // Entries in the datastore for a given day.
-  List<RowWithValue> rowValuesForDay(DateTime day) {
-    List<RowWithValue> rowStrings = [];
+  // Rows and values in the datastore for a given day. 
+  // If includeEmpty is true, include rows that don't yet have a value for this day.
+  List<RowWithValue> rowValuesForDay(DateTime day, bool includeEmpty) {
+    List<RowWithValue> rowValues = [];
     for (var row in _rows) {
-      // TODO: skip rows that don't have a value for this day?
-      rowStrings.add(RowWithValue(row, row.valueForDay(day)));
+      var value = row.valueForDay(day);
+      if (includeEmpty || value.isNotEmpty) {
+        rowValues.add(RowWithValue(row, value));
+      }
     }
-    return rowStrings;
+    return rowValues;
   }
 
   // Given the name of a row, return the row it's associated with, or throws an exception if that row does not exist.

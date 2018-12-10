@@ -12,6 +12,11 @@ class RowWithValue {
   BulletRow row;
   String value;
   RowWithValue(this.row, this.value);
+
+  @override
+  String toString() {
+    return 'RowWithValue($row.name, $value)';
+  }  
 }
 
 // A BulletRow models the semantic data for a single row within a journal,
@@ -70,6 +75,8 @@ class BulletRow<V> {
     print('[$name].valueForDay(${day.toString()}) [' + entries.map((e) => e.value).toString() + '] => "$value"');
     return value;
   }
+
+  // Return the (potentially accumulated) value for the given entries.
   String _valueForEntries(List<BulletEntry<V>> entries) {
     if (entries.isEmpty) return '';
     if (this.accumulate) {

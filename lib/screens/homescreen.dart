@@ -48,7 +48,7 @@ class BulletHomeState extends State<BulletHome> {
             return Center(child: CircularProgressIndicator());
           } else {
             _datastore = snapshot.data;
-            _currentDayRowValues = _datastore.rowValuesForDay(_currentDay);
+            _currentDayRowValues = _datastore.rowValuesForDay(_currentDay, true);
             print('Rendering Bullet Homescreen with ' + _currentDayRowValues.length.toString() + ' rows');
             
             return Container(
