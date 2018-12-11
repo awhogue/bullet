@@ -87,13 +87,16 @@ class BulletDatastore {
     throw new BulletDatastoreExcption('_rowForRowName() could not find BulletRow with name "' + rowName);
   }
 
-  // Add a new entry to the datastore. 
+  // Add a new entry to the datastore given a string name for a row.
   // Throws an exception if the BulletRow doesn't already exist.
-  void addEntry(String rowName, BulletEntry entry) {
-    print('Adding entry ' + entry.toString());
-
+  void addEntryToRowString(String rowName, BulletEntry entry) {
     BulletRow row = rowForRowName(rowName);
+    addEntryToRow(row, entry);
+  }
 
+  // Add a new entry to the datastore for the given row.
+  void addEntryToRow(BulletRow row, BulletEntry entry) {
+    print('Adding entry ' + entry.toString());
     row.entries.add(entry);
     _commit();
   }

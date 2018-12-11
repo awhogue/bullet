@@ -157,7 +157,7 @@ class NewBulletEntryState extends State<NewBulletEntry> {
       );
 
       _showMessage('Saving entry...'); 
-      _datastore.addEntry(_selectedRow, entry);
+      _datastore.addEntryToRow(row, entry);
 
       Navigator.pop(context);
     }

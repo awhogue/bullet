@@ -43,6 +43,9 @@ class BulletRow<V> {
   // instead of just a list.
   List<BulletEntry<V>> entries;
 
+  // TODO: Fields to add:
+  //   defaultValue: Default value for a new entry in this row.
+
   BulletRow([this.name, this.entries, this.accumulate, this.type, this.units = '', this.comment = '']);
 
   // Factory to create a new BulletEntry using the right data type for the given RowType.
@@ -57,6 +60,15 @@ class BulletRow<V> {
       case RowType.Text: // Fall through to avoid compiler complaints.
       default: return BulletEntry<String>(stringValue, time, comment);
     }
+  }
+
+  // Creates a new "default" BulletEntry for this row.
+  // E.g. for an accumulated numeric row, this would create an entry that was just a "1" at the current time.
+  BulletEntry newDefaultEntry() {
+    if (this.type == RowType.Number && this.accumulate) {
+      return BulletEntry<int>(1, DateTime.now(), "");
+    }
+    return BulletEntry<String>("X", DateTime.now(), "");
   }
 
   // When accumulating a value in this row, what is the start value? E.g. for 

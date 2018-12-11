@@ -137,6 +137,7 @@ class BulletHomeState extends State<BulletHome> {
                       IconButton(
                         onPressed: () { _pushDayDetailScreen(row); },
                         icon: new Icon(Icons.edit),
+                        iconSize: 28.0,
                       ),
                   ),
                   // Add an entry to the row.
@@ -144,8 +145,18 @@ class BulletHomeState extends State<BulletHome> {
                     child: IconButton(
                       onPressed: () { _pushNewEntryScreen(row); },
                       icon: new Icon(Icons.add),
+                      iconSize: 28.0,
                     )
-                  )
+                  ),
+                  // Quick-add one to the row.
+                  // TODO: only show this for numeric rows (or show a popup text entry for non-numeric).
+                  Container(
+                    child: IconButton(
+                      onPressed: () { _quickAddToRow(row); },
+                      icon: new Icon(Icons.plus_one),
+                      iconSize: 28.0,
+                    )
+                  ),
                 ],
               ),
             ),
@@ -173,6 +184,11 @@ class BulletHomeState extends State<BulletHome> {
     } else {
       Navigator.push(context, MaterialPageRoute(builder: (context) => NewBulletEntry()));
     }
+  }
+
+  // Inline add one to the given row.
+  void _quickAddToRow(RowWithValue row) {
+    setState(() { _datastore.addEntryToRow(row.row, row.row.newDefaultEntry()); });
   }
 
   void _pushDayDetailScreen(RowWithValue row) {
