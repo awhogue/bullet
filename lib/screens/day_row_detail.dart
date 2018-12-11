@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:bullet/model/bullet_row.dart';
 import 'package:bullet/model/bullet_entry.dart';
 import 'package:bullet/screens/new_entry.dart';
+import 'package:bullet/datastore.dart';
 
 // Detail screen for one row for one day, showing individual entries for that row for the day.
 class BulletDayRowDetail extends StatefulWidget {
@@ -18,6 +19,8 @@ class BulletDayRowDetailState extends State<BulletDayRowDetail> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final _timeFormatter = new DateFormat.jm();
   final _dateFormatter = new DateFormat.yMMMd();
+
+  BulletDatastore _datastore = new BulletDatastore();
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +48,7 @@ class BulletDayRowDetailState extends State<BulletDayRowDetail> {
               )
             ),
             ListView(
-              padding: EdgeInsets.symmetric(horizontal: 32.0),
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
               shrinkWrap: true,
               children: widget.row.entriesForDay(widget.day).map((entry) => _buildEntryRow(entry)).toList() + [Divider()],
             ),
@@ -61,15 +64,24 @@ class BulletDayRowDetailState extends State<BulletDayRowDetail> {
         Divider(),
         Row(
           children: [
+            // The value for this entry.
             Expanded(
               child: Text(
                 '${entry.value.toString()} ${widget.row.unitsForValueString(entry.value.toString())}',
                 style: Theme.of(context).textTheme.body1,
               ),
             ),
+            // The time of the entry.
             Text(
               _timeFormatter.format(entry.time), 
               style: Theme.of(context).textTheme.body1,
+            ),
+            // Delete the entry.
+            Container(
+              child: IconButton(
+                onPressed: () { _deleteEntry(entry); },
+                icon: new Icon(Icons.delete),
+              ),
             ),
           ],
         ),
@@ -79,5 +91,10 @@ class BulletDayRowDetailState extends State<BulletDayRowDetail> {
 
   void _pushNewEntryScreen() {
     Navigator.push(context, MaterialPageRoute(builder: (context) => NewBulletEntry(widget.row)));
+  }
+
+  void _deleteEntry(entry) {
+    // TODO: Show an alert before deleting.
+    setState(() { _datastore.deleteEntry(entry, widget.row); });
   }
 }

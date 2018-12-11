@@ -17,6 +17,9 @@ class BulletEntry<T> {
   // The value of this entry as a string.
   @override String toString() { return value.toString(); }
 
+  @override bool operator ==(o) => o is BulletEntry<T> && o.value == value && o.time == time && o.comment == comment;
+  @override int get hashCode => '${value.toString()} ${time.toString()} $comment'.hashCode;
+
   // The type of this entry. 
   // TODO: how to do reflection in dart for things like fromJson?
   // TODO: or just switch to using RowType

@@ -146,7 +146,7 @@ class BulletHomeState extends State<BulletHome> {
                       onPressed: () { _pushNewEntryScreen(row); },
                       icon: new Icon(Icons.add),
                       iconSize: 28.0,
-                    )
+                    ),
                   ),
                   // Quick-add one to the row.
                   // TODO: only show this for numeric rows (or show a popup text entry for non-numeric).
@@ -155,7 +155,7 @@ class BulletHomeState extends State<BulletHome> {
                       onPressed: () { _quickAddToRow(row); },
                       icon: new Icon(Icons.plus_one),
                       iconSize: 28.0,
-                    )
+                    ),
                   ),
                 ],
               ),

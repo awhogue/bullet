@@ -96,14 +96,22 @@ class BulletDatastore {
 
   // Add a new entry to the datastore for the given row.
   void addEntryToRow(BulletRow row, BulletEntry entry) {
-    print('Adding entry ' + entry.toString());
+    print('Adding entry ${entry.toString()}');
     row.entries.add(entry);
     _commit();
   }
 
   void addRow(BulletRow row) {
-    print('Adding row ' + row.toString());
+    print('Adding row ${row.toString()}');
     _rows.add(row);
+    _commit();
+  }
+
+  void deleteEntry(BulletEntry entry, BulletRow row) {
+    print('Deleting entry ${entry.toString()}');
+    if (!row.entries.remove(entry)) {
+      print('WARNING: Could not find entry to delete in ${row.toString()}');
+    }
     _commit();
   }
 
