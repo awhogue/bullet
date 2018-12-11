@@ -14,6 +14,10 @@ class BulletEntry<T> {
 
   BulletEntry([this.value, this.time, this.comment = ""]);
 
+  BulletEntry copyWithTime(DateTime time) {
+    return BulletEntry(this.value, time, this.comment);
+  }
+
   // The value of this entry as a string.
   @override String toString() { return value.toString(); }
 

@@ -115,6 +115,24 @@ class BulletDatastore {
     _commit();
   }
 
+  // Modify the given entry's time by the given Duration (which may be negative to decrement the time).
+  void updateEntryTime(BulletRow row, BulletEntry entry, Duration duration) {
+    BulletEntry updatedEntry = entry.copyWithTime(entry.time.add(duration));
+    print('Modifying the time of entry ${entry.toString()} by ${duration.toString()} (from ${entry.time} to $updatedEntry.time)');
+    updateEntry(row, entry, updatedEntry);
+    _commit();
+  }
+
+  void updateEntry(BulletRow row, BulletEntry original, BulletEntry updated) {
+    int index = row.entries.indexOf(original);
+    if (index < 0) {
+      print('WARNING: updateEntry could not find entry ${original.toString()} in ${row.toString()}');
+    } else {
+      row.entries[index] = updated;
+      _commit();
+    }
+  }
+
   void clear() {
     print('Clearing datastore!');
     _rows.clear();

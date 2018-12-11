@@ -130,30 +130,20 @@ class BulletHomeState extends State<BulletHome> {
                     child: valueWidget,
                     padding: EdgeInsets.symmetric(horizontal: 8.0),
                   ),
-                  // Edit the row (if there is an existing value)
-                  Container(
-                    child: (row.value.isEmpty) ?
-                      Container() :
-                      IconButton(
-                        onPressed: () { _pushDayDetailScreen(row); },
-                        icon: new Icon(Icons.edit),
-                        iconSize: 28.0,
-                      ),
-                  ),
-                  // Add an entry to the row.
-                  Container(
-                    child: IconButton(
-                      onPressed: () { _pushNewEntryScreen(row); },
-                      icon: new Icon(Icons.add),
-                      iconSize: 28.0,
-                    ),
-                  ),
                   // Quick-add one to the row.
                   // TODO: only show this for numeric rows (or show a popup text entry for non-numeric).
                   Container(
                     child: IconButton(
                       onPressed: () { _quickAddToRow(row); },
                       icon: new Icon(Icons.plus_one),
+                      iconSize: 28.0,
+                    ),
+                  ),
+                  // Add an entry to the row.
+                  Container(
+                    child: IconButton(
+                      onPressed: () { _pushNewEntryScreen(row); },
+                      icon: new Icon(Icons.add),
                       iconSize: 28.0,
                     ),
                   ),

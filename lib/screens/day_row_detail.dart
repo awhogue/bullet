@@ -20,6 +20,8 @@ class BulletDayRowDetailState extends State<BulletDayRowDetail> {
   final _timeFormatter = new DateFormat.jm();
   final _dateFormatter = new DateFormat.yMMMd();
 
+  static const int modifyTImeIntervalMinutes = 10;
+
   BulletDatastore _datastore = new BulletDatastore();
 
   @override
@@ -71,10 +73,24 @@ class BulletDayRowDetailState extends State<BulletDayRowDetail> {
                 style: Theme.of(context).textTheme.body1,
               ),
             ),
+            // Decrement the time.
+            Container(
+              child: IconButton(
+                onPressed: () { _modifyTime(entry, -1 * modifyTImeIntervalMinutes); },
+                icon: new Icon(Icons.skip_previous),
+              ),
+            ),
             // The time of the entry.
             Text(
               _timeFormatter.format(entry.time), 
               style: Theme.of(context).textTheme.body1,
+            ),
+            // Increment the time.
+            Container(
+              child: IconButton(
+                onPressed: () { _modifyTime(entry, modifyTImeIntervalMinutes); },
+                icon: new Icon(Icons.skip_next),
+              ),
             ),
             // Delete the entry.
             Container(
@@ -93,8 +109,13 @@ class BulletDayRowDetailState extends State<BulletDayRowDetail> {
     Navigator.push(context, MaterialPageRoute(builder: (context) => NewBulletEntry(widget.row)));
   }
 
-  void _deleteEntry(entry) {
+  void _deleteEntry(BulletEntry entry) {
     // TODO: Show an alert before deleting.
     setState(() { _datastore.deleteEntry(entry, widget.row); });
+  }
+
+  // TODO: what happens if this goes over the date boundary into another day?
+  void _modifyTime(BulletEntry entry, int minutes) {
+    setState(() { _datastore.updateEntryTime(widget.row, entry, Duration(minutes: minutes)); });
   }
 }
