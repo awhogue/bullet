@@ -18,15 +18,14 @@ class BulletDayRowDetail extends StatefulWidget {
 class BulletDayRowDetailState extends State<BulletDayRowDetail> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final _dateFormatter = new DateFormat.yMMMd();
+  final _timeFormatter = new DateFormat.jm();
+
+  static const int modifyTImeIntervalMinutes = 10;
 
   BulletDatastore _datastore = new BulletDatastore();
 
-  // The entries in the journal for this row and day.
-  EntriesDataTableSource _dataTableSource;
-
   @override
   Widget build(BuildContext context) {
-    _dataTableSource = EntriesDataTableSource(this);
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -49,9 +48,7 @@ class BulletDayRowDetailState extends State<BulletDayRowDetail> {
               )
             )
           ),
-          PaginatedDataTable(
-            header: SizedBox.shrink(),
-            source: _dataTableSource,
+          DataTable(
             columns: <DataColumn>[
               DataColumn(
                 label: const Text('Value'),
@@ -69,9 +66,46 @@ class BulletDayRowDetailState extends State<BulletDayRowDetail> {
                 label: SizedBox.shrink(),
               ),
             ],
+            rows: widget.row.entriesForDay(widget.day).map((entry) => _buildEntryDataRow(entry)).toList(),
           ),
         ]
       ),
+    );
+  }
+
+  DataRow _buildEntryDataRow(BulletEntry entry) {
+    return DataRow(
+      cells: <DataCell>[
+        // Entry value.
+        DataCell(
+          Text(
+            '${entry.value.toString()} ${widget.row.unitsForValueString(entry.value.toString())}',
+            style: Theme.of(context).textTheme.body1,
+          ),
+        ), 
+        // Decrement the time.
+        DataCell(
+          Icon(Icons.skip_previous),
+          onTap: () { modifyTime(entry, -1 * modifyTImeIntervalMinutes); },
+        ),
+        // The time of the entry.
+        DataCell(
+          Text(
+            _timeFormatter.format(entry.time), 
+            style: Theme.of(context).textTheme.body1,
+          ),
+        ),
+        // Increment the time.
+        DataCell(
+          Icon(Icons.skip_next),
+          onTap: () { modifyTime(entry, modifyTImeIntervalMinutes); },
+        ),
+        // Delete the entry.
+        DataCell(
+          Icon(Icons.delete),
+          onTap: () { deleteEntry(entry); },
+        ),
+      ],
     );
   }
 
@@ -87,65 +121,5 @@ class BulletDayRowDetailState extends State<BulletDayRowDetail> {
   // TODO: what happens if this goes over the date boundary into another day?
   void modifyTime(BulletEntry entry, int minutes) {
     setState(() { _datastore.updateEntryTime(widget.row, entry, Duration(minutes: minutes)); });
-  }
-}
-
-class EntriesDataTableSource extends DataTableSource {
-  final _timeFormatter = new DateFormat.jm();
-
-  static const int modifyTImeIntervalMinutes = 10;
-
-  List<BulletEntry> _entries;
-  BulletDayRowDetailState parent;
-  EntriesDataTableSource(this.parent) {
-    this._entries = parent.widget.row.entriesForDay(parent.widget.day);
-    print('Constructed EntriesDataTableSource with ${_entries.length} entries');
-  }
-
-  @override bool get isRowCountApproximate => false;
-  @override int get rowCount { 
-    print('rowCount: ${_entries.length}');
-    return _entries.length;
-  }
-  @override int get selectedRowCount => 0;
-
-  @override DataRow getRow(int index) {
-    assert(index >= 0);
-    if (index >= _entries.length) return null;
-    final BulletEntry entry = _entries[index];
-    return DataRow.byIndex(
-      index: index,
-      cells: <DataCell>[
-        // Entry value.
-        DataCell(
-          Text(
-            '${entry.value.toString()} ${parent.widget.row.unitsForValueString(entry.value.toString())}',
-            style: Theme.of(parent.context).textTheme.body1,
-          ),
-        ), 
-        // Decrement the time.
-        DataCell(
-          Icon(Icons.skip_previous),
-          onTap: () { parent.modifyTime(entry, -1 * modifyTImeIntervalMinutes); },
-        ),
-        // The time of the entry.
-        DataCell(
-          Text(
-            _timeFormatter.format(entry.time), 
-            style: Theme.of(parent.context).textTheme.body1,
-          ),
-        ),
-        // Increment the time.
-        DataCell(
-          Icon(Icons.skip_next),
-          onTap: () { parent.modifyTime(entry, modifyTImeIntervalMinutes); },
-        ),
-        // Delete the entry.
-        DataCell(
-          Icon(Icons.delete),
-          onTap: () { parent.deleteEntry(entry); },
-        ),
-      ],
-    );
   }
 }
