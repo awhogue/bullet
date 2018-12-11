@@ -104,8 +104,8 @@ class BulletRow<V> {
 
   // Return a displayable string for this row's units for the given value, aware of pluralization 
   // if this is a numeric value.
-  String unitsForValue(String value) {
-    switch (type) {
+  String unitsForValueString(String value) {
+    switch (this.type) {
       case RowType.Number: {
         int intVal = int.parse(value);
         if (intVal == 1) {

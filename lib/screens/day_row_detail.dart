@@ -24,7 +24,7 @@ class BulletDayRowDetailState extends State<BulletDayRowDetail> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text('${widget.row.name} (${widget.row.units})',),
+        title: Text(widget.row.name),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _pushNewEntryScreen,
@@ -63,7 +63,7 @@ class BulletDayRowDetailState extends State<BulletDayRowDetail> {
           children: [
             Expanded(
               child: Text(
-                entry.value.toString(),
+                '${entry.value.toString()} ${widget.row.unitsForValueString(entry.value.toString())}',
                 style: Theme.of(context).textTheme.body1,
               ),
             ),
