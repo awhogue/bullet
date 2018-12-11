@@ -15,15 +15,15 @@ class BulletHome extends StatefulWidget {
 class BulletHomeState extends State<BulletHome> {
   BulletDatastore _datastore;
 
-  // Recently added entries, sorted in reverse chronological order.
+  // The rows in the journal that will be displayed on the homescreen.
   List<RowWithValue> _currentDayRowValues = List<RowWithValue>();
-  // Currently set to today, but eventually will be UI-controlled
+
+  // The day being displayed.
   DateTime _currentDay;
 
   final _dateFormatter = new DateFormat.yMMMMEEEEd();
 
   BulletHomeState() {
-    // TODO: rewind to the most recent day with data?
     _currentDay = DateTime.now();
   }
 

@@ -98,6 +98,7 @@ class BulletRow<V> {
     }
   }
 
+  // TODO: move this into the datastore?
   List<BulletEntry<V>> entriesForDay(DateTime day) {
     return entries.where((e) => e.onDay(day)).toList();
   }
