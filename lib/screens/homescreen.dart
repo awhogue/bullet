@@ -4,7 +4,7 @@ import 'package:bullet/model/bullet_row.dart';
 import 'package:bullet/datastore.dart';
 import 'package:bullet/util.dart';
 import 'new_entry.dart';
-import 'day_detail.dart';
+import 'day_row_detail.dart';
 import 'settings.dart';
 
 class BulletHome extends StatefulWidget {
@@ -192,7 +192,7 @@ class BulletHomeState extends State<BulletHome> {
   }
 
   void _pushDayDetailScreen(RowWithValue row) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => BulletDayDetail(row.row, _currentDay)));
+    Navigator.push(context, MaterialPageRoute(builder: (context) => BulletDayRowDetail(row.row, _currentDay)));
   }
 
   void _pushSettingsScreen() {

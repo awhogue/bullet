@@ -4,16 +4,17 @@ import 'package:bullet/model/bullet_row.dart';
 import 'package:bullet/model/bullet_entry.dart';
 import 'package:bullet/screens/new_entry.dart';
 
-class BulletDayDetail extends StatefulWidget {
+// Detail screen for one row for one day, showing individual entries for that row for the day.
+class BulletDayRowDetail extends StatefulWidget {
   final BulletRow row;
   final DateTime day;
-  BulletDayDetail(this.row, this.day);
+  BulletDayRowDetail(this.row, this.day);
 
   @override
-  State<StatefulWidget> createState() => BulletDayDetailState();
+  State<StatefulWidget> createState() => BulletDayRowDetailState();
 }
 
-class BulletDayDetailState extends State<BulletDayDetail> {
+class BulletDayRowDetailState extends State<BulletDayRowDetail> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final _timeFormatter = new DateFormat.jm();
   final _dateFormatter = new DateFormat.yMMMd();
