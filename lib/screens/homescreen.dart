@@ -135,7 +135,7 @@ class BulletHomeState extends State<BulletHome> {
                   Container(
                     child: IconButton(
                       onPressed: () { _quickAddToRow(row); },
-                      icon: new Icon(Icons.plus_one),
+                      icon: Icon(Icons.plus_one),
                       iconSize: 28.0,
                     ),
                   ),
@@ -143,7 +143,7 @@ class BulletHomeState extends State<BulletHome> {
                   Container(
                     child: IconButton(
                       onPressed: () { _pushNewEntryScreen(row); },
-                      icon: new Icon(Icons.add),
+                      icon: Icon(Icons.add),
                       iconSize: 28.0,
                     ),
                   ),
