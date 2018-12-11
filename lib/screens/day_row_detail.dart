@@ -48,62 +48,63 @@ class BulletDayRowDetailState extends State<BulletDayRowDetail> {
               )
             )
           ),
-          DataTable(
-            columns: <DataColumn>[
-              DataColumn(
-                label: const Text('Value'),
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+            child: Table(
+              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+              defaultColumnWidth: IntrinsicColumnWidth(),
+              columnWidths: const {
+                0: FlexColumnWidth(),
+              },
+              border: TableBorder(
+                top: BorderSide(color: Theme.of(context).dividerColor),
+                bottom: BorderSide(color: Theme.of(context).dividerColor),
+                horizontalInside: BorderSide(color: Theme.of(context).dividerColor),
               ),
-              DataColumn(
-                label: SizedBox.shrink(),
-              ),
-              DataColumn(
-                label: const Text('Time'),
-              ),
-              DataColumn(
-                label: SizedBox.shrink(),
-              ),
-              DataColumn(
-                label: SizedBox.shrink(),
-              ),
-            ],
-            rows: widget.row.entriesForDay(widget.day).map((entry) => _buildEntryDataRow(entry)).toList(),
+              children: widget.row.entriesForDay(widget.day).map((entry) => _buildEntryDataRow(entry)).toList(),
+            ),
           ),
         ]
       ),
     );
   }
 
-  DataRow _buildEntryDataRow(BulletEntry entry) {
-    return DataRow(
-      cells: <DataCell>[
+  TableRow _buildEntryDataRow(BulletEntry entry) {
+    return TableRow(
+      children: <Widget>[
         // Entry value.
-        DataCell(
-          Text(
+        Container(
+          padding: EdgeInsets.symmetric(vertical: 20.0),
+          child: Text(
             '${entry.value.toString()} ${widget.row.unitsForValueString(entry.value.toString())}',
             style: Theme.of(context).textTheme.body1,
           ),
-        ), 
+        ),
         // Decrement the time.
-        DataCell(
-          Icon(Icons.skip_previous),
-          onTap: () { modifyTime(entry, -1 * modifyTImeIntervalMinutes); },
+        IconButton(
+          icon: Icon(Icons.chevron_left),
+          color: Theme.of(context).buttonColor,
+          onPressed: () { modifyTime(entry, -1 * modifyTImeIntervalMinutes); },
         ),
         // The time of the entry.
-        DataCell(
-          Text(
+        Container(
+          alignment: Alignment.centerRight,
+          child: Text(
             _timeFormatter.format(entry.time), 
             style: Theme.of(context).textTheme.body1,
           ),
         ),
         // Increment the time.
-        DataCell(
-          Icon(Icons.skip_next),
-          onTap: () { modifyTime(entry, modifyTImeIntervalMinutes); },
+        IconButton(
+          icon: Icon(Icons.chevron_right),
+          color: Theme.of(context).buttonColor,
+          onPressed: () { modifyTime(entry, modifyTImeIntervalMinutes); },
         ),
         // Delete the entry.
-        DataCell(
-          Icon(Icons.delete),
-          onTap: () { deleteEntry(entry); },
+        IconButton(
+          icon: Icon(Icons.delete),
+          color: Theme.of(context).buttonColor,
+          onPressed: () { deleteEntry(entry); },
         ),
       ],
     );
