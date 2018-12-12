@@ -100,11 +100,6 @@ class BulletHomeState extends State<BulletHome> {
                       children: _currentDayRowValues.map((rv) => _buildDataRow(rv)).toList(),
                     ),
                   ),
-                  /* ListView(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0),
-                    shrinkWrap: true,
-                    children: _currentDayRowValues.map((rv) => _buildDayRow(rv)).toList() + [Divider()],
-                  ), */
               ],
             );
           }
