@@ -11,7 +11,9 @@ class MyApp extends StatelessWidget {
       theme: new ThemeData(
         primaryColor: Colors.indigo,
         accentColor: Colors.indigoAccent,
-        buttonColor: Colors.blueGrey[600],
+        iconTheme: Theme.of(context).iconTheme.copyWith(
+          color: Colors.blueGrey[600],
+        ),
         textTheme: Theme.of(context).textTheme.copyWith(
           subhead: TextStyle(
             fontSize: 16.0,

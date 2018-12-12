@@ -49,7 +49,7 @@ class BulletHomeState extends State<BulletHome> {
           } else {
             _datastore = snapshot.data;
             _currentDayRowValues = _datastore.rowValuesForDay(_currentDay, true);
-            print('Rendering Bullet Homescreen with ' + _currentDayRowValues.length.toString() + ' rows');
+            print('Rendering Bullet Homescreen with ${_currentDayRowValues.length.toString()} rows');
             
             return Container(
               child: Column(

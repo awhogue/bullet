@@ -83,7 +83,6 @@ class BulletDayRowDetailState extends State<BulletDayRowDetail> {
         // Decrement the time.
         IconButton(
           icon: Icon(Icons.chevron_left),
-          color: Theme.of(context).buttonColor,
           onPressed: () { modifyTime(entry, -1 * modifyTImeIntervalMinutes); },
         ),
         // The time of the entry.
@@ -97,13 +96,11 @@ class BulletDayRowDetailState extends State<BulletDayRowDetail> {
         // Increment the time.
         IconButton(
           icon: Icon(Icons.chevron_right),
-          color: Theme.of(context).buttonColor,
           onPressed: () { modifyTime(entry, modifyTImeIntervalMinutes); },
         ),
         // Delete the entry.
         IconButton(
           icon: Icon(Icons.delete),
-          color: Theme.of(context).buttonColor,
           onPressed: () { deleteEntry(entry); },
         ),
       ],
