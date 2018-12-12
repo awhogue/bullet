@@ -3,15 +3,17 @@ import 'package:bullet/model/bullet_entry.dart';
 import 'package:bullet/model/bullet_row.dart';
 import 'package:bullet/datastore.dart';
 
-class NewBulletEntry extends StatefulWidget {
+// Edit (or create) a journal entry.
+class EditBulletEntry extends StatefulWidget {
   final BulletRow row;
-  NewBulletEntry(this.row);
+  final BulletEntry entry;
+  EditBulletEntry(this.row, this.entry);
 
   @override
-  State<StatefulWidget> createState() => NewBulletEntryState();
+  State<StatefulWidget> createState() => EditBulletEntryState();
 }
 
-class NewBulletEntryState extends State<NewBulletEntry> {
+class EditBulletEntryState extends State<EditBulletEntry> {
   BulletDatastore _datastore = new BulletDatastore();
   
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -24,10 +26,16 @@ class NewBulletEntryState extends State<NewBulletEntry> {
 
   @override
   Widget build(BuildContext context) {
+    if (null != widget.entry) {
+      _enteredValue = widget.entry.value.toString();
+      _enteredComment = widget.entry.comment;
+      print('EditBulletEntryState.build() with entry ${widget.entry.toString()}');
+    }
+
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text('New ${widget.row.name} Entry'),
+        title: Text('${widget.row.name} Entry'),
       ),
       body: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
@@ -36,6 +44,7 @@ class NewBulletEntryState extends State<NewBulletEntry> {
           child: Column(
             children: [
               TextFormField(
+                initialValue: _enteredValue,
                 decoration: InputDecoration(
                   labelText: 'Value',
                 ),
@@ -52,6 +61,7 @@ class NewBulletEntryState extends State<NewBulletEntry> {
               ),
               Flexible(
                 child: TextFormField(
+                  initialValue: _enteredComment,
                   decoration: InputDecoration(
                     labelText: 'Comment',
                   ),
@@ -64,7 +74,7 @@ class NewBulletEntryState extends State<NewBulletEntry> {
                 padding: EdgeInsets.only(top: 16.0),
                 child: RaisedButton(
                   onPressed: _submitForm,
-                  child: Text('Create Entry'),
+                  child: Text('Save Entry'),
                 ),
               ),
             ],
@@ -84,15 +94,25 @@ class NewBulletEntryState extends State<NewBulletEntry> {
     } else {
       form.save();
 
-      BulletEntry entry = BulletRow.newEntryForType(
-        widget.row.type, 
-        _enteredValue,
-        DateTime.now(),
-        _enteredComment
-      );
-
       _showMessage('Saving entry...'); 
-      _datastore.addEntryToRow(widget.row, entry);
+
+      if (null != widget.entry) {
+        BulletEntry entry = BulletRow.newEntryForType(
+          widget.row.type, 
+          _enteredValue,
+          widget.entry.time,
+          _enteredComment
+        );
+        _datastore.updateEntry(widget.row, widget.entry, entry);
+      } else {
+        BulletEntry entry = BulletRow.newEntryForType(
+          widget.row.type, 
+          _enteredValue,
+          DateTime.now(),
+          _enteredComment
+        );
+        _datastore.addEntryToRow(widget.row, entry);
+      }
 
       Navigator.pop(context);
     }

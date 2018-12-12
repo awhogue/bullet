@@ -2,7 +2,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:bullet/model/bullet_row.dart';
 import 'package:bullet/model/bullet_entry.dart';
-import 'package:bullet/screens/new_entry.dart';
+import 'package:bullet/screens/edit_entry.dart';
 import 'package:bullet/datastore.dart';
 import 'package:bullet/util.dart';
 
@@ -33,7 +33,7 @@ class BulletDayRowDetailState extends State<BulletDayRowDetail> {
         title: Text(widget.row.name),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _pushNewEntryScreen,
+        onPressed: _pushEditEntryScreen,
         child: Icon(Icons.add),
       ),
       body: ListView(
@@ -83,11 +83,14 @@ class BulletDayRowDetailState extends State<BulletDayRowDetail> {
     return TableRow(
       children: <Widget>[
         // Entry value.
-        Container(
-          padding: EdgeInsets.symmetric(vertical: 20.0),
-          child: Text(
-            '${entry.value.toString()} ${widget.row.unitsForValueString(entry.value.toString())}',
-            style: Theme.of(context).textTheme.body1,
+        GestureDetector(
+          onTap: () { _pushEditEntryScreen(entry); },
+          child: Container(
+            padding: EdgeInsets.symmetric(vertical: 20.0),
+            child: Text(
+              '${entry.value.toString()} ${widget.row.unitsForValueString(entry.value.toString())}',
+              style: Theme.of(context).textTheme.body1,
+            ),
           ),
         ),
         // Decrement the time.
@@ -117,8 +120,8 @@ class BulletDayRowDetailState extends State<BulletDayRowDetail> {
     );
   }
 
-  void _pushNewEntryScreen() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => NewBulletEntry(widget.row)));
+  void _pushEditEntryScreen([BulletEntry entry]) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => EditBulletEntry(widget.row, entry)));
   }
 
   void deleteEntry(BulletEntry entry) {

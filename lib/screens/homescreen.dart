@@ -3,7 +3,7 @@ import 'package:bullet/model/bullet_row.dart';
 import 'package:bullet/datastore.dart';
 import 'package:bullet/util.dart';
 import 'day_row_detail.dart';
-import 'new_entry.dart';
+import 'edit_entry.dart';
 import 'new_row.dart';
 import 'settings.dart';
 
@@ -193,7 +193,7 @@ class BulletHomeState extends State<BulletHome> {
   }
 
   void _pushNewEntryScreen(RowWithValue row) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => NewBulletEntry(row.row)));
+    Navigator.push(context, MaterialPageRoute(builder: (context) => EditBulletEntry(row.row, null)));
   }
 
   void _pushNewRowScreen() {
