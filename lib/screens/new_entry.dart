@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:bullet/model/bullet_entry.dart';
 import 'package:bullet/model/bullet_row.dart';
 import 'package:bullet/datastore.dart';
-import 'new_row.dart';
 
 class NewBulletEntry extends StatefulWidget {
   final BulletRow row;
-  NewBulletEntry([this.row]);
+  NewBulletEntry(this.row);
 
   @override
   State<StatefulWidget> createState() => NewBulletEntryState();
@@ -18,30 +17,17 @@ class NewBulletEntryState extends State<NewBulletEntry> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
-  // The selected Row name in the dropdown.
-  String _selectedRow;
   // The text entered in the "Value" field.
   String _enteredValue;
   // The text entered in the "Comment" field.
   String _enteredComment;
 
-  List<String> _rowNames;
-
-  NewBulletEntryState() {
-    _rowNames = _datastore.rowNames();
-  }
-
   @override
   Widget build(BuildContext context) {
-    if (null != widget.row) { 
-      _selectedRow = widget.row.name; 
-    }
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text(
-          (null == _selectedRow) ? 'New Entry' : 'New $_selectedRow Entry',
-        ),
+        title: Text('New ${widget.row.name} Entry'),
       ),
       body: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
@@ -49,46 +35,6 @@ class NewBulletEntryState extends State<NewBulletEntry> {
           key: this._formKey,
           child: Column(
             children: [
-              Row(
-                children: [
-                  Container(
-                    // Hide drop down if we have zero rows.
-                    child: (_datastore.numRows() == 0) ?
-                      Expanded(child: Text('')) :
-                      Expanded(
-                        child: InputDecorator(
-                          decoration: const InputDecoration(
-                            labelText: 'Row',
-                            helperText: 'Choose the row',
-                          ),
-                          child: DropdownButtonHideUnderline(
-                            child: DropdownButton<String>(
-                              value: _selectedRow,
-                              // value: // TOOD: set the default to the most recently created entry?
-                              onChanged: (String newValue) {
-                                setState(() { _selectedRow = newValue; });
-                              },
-                              items: _rowNames.map((String rowName) => 
-                                DropdownMenuItem<String>(
-                                  value: rowName,
-                                  child: Text(rowName),
-                                ),
-                              ).toList(),
-                            ),
-                          ),
-                        ),
-                      ),
-                  ),
-                  Container(
-                    alignment: Alignment.centerRight,
-                    padding: EdgeInsets.only(left: 12.0),
-                    child: RaisedButton(
-                      onPressed: _pushNewRowScreen,
-                      child: Text('New Row'),
-                    ),
-                  ),
-                ],
-              ),
               TextFormField(
                 decoration: InputDecoration(
                   labelText: 'Value',
@@ -128,16 +74,6 @@ class NewBulletEntryState extends State<NewBulletEntry> {
     );
   }
 
-  void _pushNewRowScreen() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => NewBulletRow()))
-      .then((newRowName) {
-        setState(() {
-          _selectedRow = newRowName;
-          _rowNames = _datastore.rowNames();
-        });
-      });
-  }
-
   // TODO: Consider using TextInputController? 
   // https://flutterbyexample.com/forms-1-user-input
   void _submitForm() {
@@ -148,16 +84,15 @@ class NewBulletEntryState extends State<NewBulletEntry> {
     } else {
       form.save();
 
-      BulletRow row = _datastore.rowForRowName(_selectedRow);
       BulletEntry entry = BulletRow.newEntryForType(
-        row.type, 
+        widget.row.type, 
         _enteredValue,
         DateTime.now(),
         _enteredComment
       );
 
       _showMessage('Saving entry...'); 
-      _datastore.addEntryToRow(row, entry);
+      _datastore.addEntryToRow(widget.row, entry);
 
       Navigator.pop(context);
     }

@@ -4,6 +4,7 @@ import 'package:bullet/model/bullet_row.dart';
 import 'package:bullet/model/bullet_entry.dart';
 import 'package:bullet/screens/new_entry.dart';
 import 'package:bullet/datastore.dart';
+import 'package:bullet/util.dart';
 
 // Detail screen for one row for one day, showing individual entries for that row for the day.
 class BulletDayRowDetail extends StatefulWidget {
@@ -17,7 +18,6 @@ class BulletDayRowDetail extends StatefulWidget {
 
 class BulletDayRowDetailState extends State<BulletDayRowDetail> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  final _dateFormatter = new DateFormat.yMMMd();
   final _timeFormatter = new DateFormat.jm();
 
   static const int modifyTImeIntervalMinutes = 10;
@@ -44,7 +44,7 @@ class BulletDayRowDetailState extends State<BulletDayRowDetail> {
             child: Container(
               padding: EdgeInsets.symmetric(vertical: 8.0),
               child: Text(
-                _dateFormatter.format(widget.day),
+                BulletUtil.headlineDate(widget.day),
                 style: Theme.of(context).textTheme.headline,
               )
             )

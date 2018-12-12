@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:bullet/model/bullet_row.dart';
 import 'package:bullet/datastore.dart';
 import 'package:bullet/util.dart';
-import 'new_entry.dart';
 import 'day_row_detail.dart';
+import 'new_entry.dart';
+import 'new_row.dart';
 import 'settings.dart';
 
 class BulletHome extends StatefulWidget {
@@ -35,7 +35,7 @@ class BulletHomeState extends State<BulletHome> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _pushNewEntryScreen,
+        onPressed: _pushNewRowScreen,
         child: Icon(Icons.add),
       ),
       body: FutureBuilder<BulletDatastore>(
@@ -67,7 +67,7 @@ class BulletHomeState extends State<BulletHome> {
                             ),
                             Expanded(
                               child: Text(
-                                _headlineDate(),
+                                BulletUtil.headlineDate(_currentDay),
                                 style: Theme.of(context).textTheme.headline,
                                 textAlign: TextAlign.center,
                               ),
@@ -121,16 +121,6 @@ class BulletHomeState extends State<BulletHome> {
         },
       ),
     );
-  }
-
-  final _dateFormatterYear = new DateFormat.yMMMMEEEEd();
-  final _dateFormatterNoYear = new DateFormat.MMMMEEEEd();
-  String _headlineDate() {
-    if (DateTime.now().year == _currentDay.year) {
-      return _dateFormatterNoYear.format(_currentDay);
-    } else {
-      return _dateFormatterYear.format(_currentDay);
-    }
   }
 
   // Change the currently displayed date by the given number of days (which may be negative).
@@ -197,17 +187,17 @@ class BulletHomeState extends State<BulletHome> {
     }
   }
 
-  void _pushNewEntryScreen([RowWithValue row]) {
-    if (null != row) {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => NewBulletEntry(row.row)));
-    } else {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => NewBulletEntry()));
-    }
-  }
-
   // Inline add one to the given row.
   void _quickAddToRow(RowWithValue row) {
     setState(() { _datastore.addEntryToRow(row.row, row.row.newDefaultEntry()); });
+  }
+
+  void _pushNewEntryScreen(RowWithValue row) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => NewBulletEntry(row.row)));
+  }
+
+  void _pushNewRowScreen() {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => NewBulletRow()));
   }
 
   void _pushDayDetailScreen(RowWithValue row) {

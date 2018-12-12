@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 // Utilities for the Bullet app.
 class BulletUtil {
   // Return the number of days before today's date for the given date.
@@ -21,5 +23,15 @@ class BulletUtil {
       a.month == b.month &&
       a.day == b.day
     );
+  }
+
+  static final _dateFormatterYear = new DateFormat.yMMMMEEEEd();
+  static final _dateFormatterNoYear = new DateFormat.MMMMEEEEd();
+  static String headlineDate(DateTime currentDay) {
+    if (DateTime.now().year == currentDay.year) {
+      return _dateFormatterNoYear.format(currentDay);
+    } else {
+      return _dateFormatterYear.format(currentDay);
+    }
   }
 }
