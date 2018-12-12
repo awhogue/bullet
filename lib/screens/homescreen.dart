@@ -21,8 +21,6 @@ class BulletHomeState extends State<BulletHome> {
   // The day being displayed.
   DateTime _currentDay;
 
-  final _dateFormatter = new DateFormat.yMMMMEEEEd();
-
   BulletHomeState() {
     _currentDay = DateTime.now();
   }
@@ -49,6 +47,7 @@ class BulletHomeState extends State<BulletHome> {
           } else {
             _datastore = snapshot.data;
             _currentDayRowValues = _datastore.rowValuesForDay(_currentDay, true);
+            bool isToday = (BulletUtil.sameDay(_currentDay, DateTime.now()));
             print('Rendering Bullet Homescreen with ${_currentDayRowValues.length.toString()} rows');
             
             return ListView(
@@ -60,9 +59,25 @@ class BulletHomeState extends State<BulletHome> {
                     children: [
                       Container(
                         padding: EdgeInsets.symmetric(vertical: 12.0),
-                        child: Text(
-                          _dateFormatter.format(_currentDay),
-                          style: Theme.of(context).textTheme.headline,
+                        child: Row(
+                          children: <Widget>[
+                            IconButton(
+                              icon: Icon(Icons.chevron_left),
+                              onPressed: () { _changeDay(-1); },
+                            ),
+                            Expanded(
+                              child: Text(
+                                _headlineDate(),
+                                style: Theme.of(context).textTheme.headline,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.chevron_right),
+                              // Disable show the "forward" chevron if we're on today's date.
+                              onPressed: (isToday) ? null : () { _changeDay(1); },
+                            ),
+                          ],
                         ),
                       ),
                       Container(
@@ -108,6 +123,23 @@ class BulletHomeState extends State<BulletHome> {
     );
   }
 
+  final _dateFormatterYear = new DateFormat.yMMMMEEEEd();
+  final _dateFormatterNoYear = new DateFormat.MMMMEEEEd();
+  String _headlineDate() {
+    if (DateTime.now().year == _currentDay.year) {
+      return _dateFormatterNoYear.format(_currentDay);
+    } else {
+      return _dateFormatterYear.format(_currentDay);
+    }
+  }
+
+  // Change the currently displayed date by the given number of days (which may be negative).
+  void _changeDay(int numDays) {
+    setState(() {
+      _currentDay = _currentDay.add(Duration(days: numDays));
+    });
+  }
+
   TableRow _buildDataRow(RowWithValue row) {
     // Render the value of the row only if it exists for this day.
     String valueString = 
@@ -130,7 +162,7 @@ class BulletHomeState extends State<BulletHome> {
             child: Text(
               valueString,
               style: Theme.of(context).textTheme.body1,
-            );,
+            ),
             padding: EdgeInsets.symmetric(horizontal: 8.0),
           ),
           // Quick-add one to the row.

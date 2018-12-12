@@ -13,4 +13,13 @@ class BulletUtil {
     date = DateTime(date.year, date.month, date.day);
     return today.difference(date).inDays;
   }
+
+  // Return true if the two dates are on the same day (ignoring hours, minutes, etc).
+  static bool sameDay(DateTime a, DateTime b) {
+    return (
+      a.year == b.year &&
+      a.month == b.month &&
+      a.day == b.day
+    );
+  }
 }

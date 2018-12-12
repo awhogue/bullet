@@ -1,3 +1,5 @@
+import 'package:bullet/util.dart';
+
 // A single entry in the journal, parameterized by the datatype of the entry itself
 // (e.g. String or int).
 //
@@ -30,11 +32,7 @@ class BulletEntry<T> {
   String type() { return value.runtimeType.toString(); }
 
   bool onDay(DateTime day) {
-    return (
-      this.time.year == day.year &&
-      this.time.month == day.month &&
-      this.time.day == day.day
-    );
+    return BulletUtil.sameDay(this.time, day);
   }
 
   // Return the most recent value in the given list of entries.

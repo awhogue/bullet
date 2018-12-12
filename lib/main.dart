@@ -11,6 +11,7 @@ class MyApp extends StatelessWidget {
       theme: new ThemeData(
         primaryColor: Colors.indigo,
         accentColor: Colors.indigoAccent,
+        disabledColor: Colors.blueGrey[200],
         iconTheme: Theme.of(context).iconTheme.copyWith(
           color: Colors.blueGrey[600],
         ),
