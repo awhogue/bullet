@@ -94,7 +94,7 @@ class BulletRow<V> {
     if (this.accumulate) {
       return entries.fold(startValue(), (value, element) => value + element.value).toString();
     } else {
-      return BulletEntry.lastValue(entries).value();
+      return BulletEntry.lastValue(entries).value;
     }
   }
 
