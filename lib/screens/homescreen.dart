@@ -149,7 +149,7 @@ class BulletHomeState extends State<BulletHome> {
     return TableRow(
       children: <Widget>[      
           GestureDetector(
-            onTap: () { (row.value.isEmpty) ? _pushNewEntryScreen(row) : _pushDayDetailScreen(row); },
+            onTap: () { _pushDayDetailScreen(row); },
             child: Container(
               child: Text(
                 row.row.name,

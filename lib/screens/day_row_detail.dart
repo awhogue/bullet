@@ -26,6 +26,7 @@ class BulletDayRowDetailState extends State<BulletDayRowDetail> {
 
   @override
   Widget build(BuildContext context) {
+    List<BulletEntry> currentEntries = widget.row.entriesForDay(widget.day);
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -48,22 +49,31 @@ class BulletDayRowDetailState extends State<BulletDayRowDetail> {
               )
             )
           ),
-          Container(
-            padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
-            child: Table(
-              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-              defaultColumnWidth: IntrinsicColumnWidth(),
-              columnWidths: const {
-                0: FlexColumnWidth(),
-              },
-              border: TableBorder(
-                top: BorderSide(color: Theme.of(context).dividerColor),
-                bottom: BorderSide(color: Theme.of(context).dividerColor),
-                horizontalInside: BorderSide(color: Theme.of(context).dividerColor),
+          (currentEntries.isEmpty) ?
+            Container(
+              alignment: Alignment.center,
+              padding: EdgeInsets.only(top: 100.0),
+              child: Text(
+                'No entries yet! Tap "+" to add one.',
+                style: Theme.of(context).textTheme.subhead,
+              )
+            ) :
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+              child: Table(
+                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                defaultColumnWidth: IntrinsicColumnWidth(),
+                columnWidths: const {
+                  0: FlexColumnWidth(),
+                },
+                border: TableBorder(
+                  top: BorderSide(color: Theme.of(context).dividerColor),
+                  bottom: BorderSide(color: Theme.of(context).dividerColor),
+                  horizontalInside: BorderSide(color: Theme.of(context).dividerColor),
+                ),
+                children: currentEntries.map((entry) => _buildEntryDataRow(entry)).toList(),
               ),
-              children: widget.row.entriesForDay(widget.day).map((entry) => _buildEntryDataRow(entry)).toList(),
             ),
-          ),
         ]
       ),
     );
