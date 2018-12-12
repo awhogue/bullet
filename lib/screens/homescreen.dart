@@ -51,32 +51,31 @@ class BulletHomeState extends State<BulletHome> {
             _currentDayRowValues = _datastore.rowValuesForDay(_currentDay, true);
             print('Rendering Bullet Homescreen with ${_currentDayRowValues.length.toString()} rows');
             
-            return Container(
-              child: Column(
-                children: [
-                  Container(
-                    alignment: Alignment.center,
-                    padding: EdgeInsets.only(top: 12.0),
-                    child: Column(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.symmetric(vertical: 12.0),
-                          child: Text(
-                            _dateFormatter.format(_currentDay),
-                            style: Theme.of(context).textTheme.headline,
-                          ),
+            return ListView(
+              children: <Widget>[
+                Container(
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.only(top: 12.0),
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.symmetric(vertical: 12.0),
+                        child: Text(
+                          _dateFormatter.format(_currentDay),
+                          style: Theme.of(context).textTheme.headline,
                         ),
-                        Container(
-                          padding: EdgeInsets.only(bottom: 8.0),
-                          child: Text(
-                            _daysAgoText(),
-                            style: Theme.of(context).textTheme.subhead,
-                          ),
+                      ),
+                      Container(
+                        padding: EdgeInsets.only(bottom: 8.0),
+                        child: Text(
+                          _daysAgoText(),
+                          style: Theme.of(context).textTheme.subhead,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                  (_currentDayRowValues.isEmpty) ?
+                ),
+                (_currentDayRowValues.isEmpty) ?
                   Container(
                     alignment: Alignment.center,
                     padding: EdgeInsets.only(top: 100.0),
@@ -85,13 +84,28 @@ class BulletHomeState extends State<BulletHome> {
                       style: Theme.of(context).textTheme.subhead,
                     )
                   ) :
-                  ListView(
+                  Container(
+                    padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+                    child: Table(
+                      defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                      defaultColumnWidth: IntrinsicColumnWidth(),
+                      columnWidths: const {
+                        0: FlexColumnWidth(),
+                      },
+                      border: TableBorder(
+                        top: BorderSide(color: Theme.of(context).dividerColor),
+                        bottom: BorderSide(color: Theme.of(context).dividerColor),
+                        horizontalInside: BorderSide(color: Theme.of(context).dividerColor),
+                      ),
+                      children: _currentDayRowValues.map((rv) => _buildDataRow(rv)).toList(),
+                    ),
+                  ),
+                  /* ListView(
                     padding: EdgeInsets.symmetric(horizontal: 16.0),
                     shrinkWrap: true,
                     children: _currentDayRowValues.map((rv) => _buildDayRow(rv)).toList() + [Divider()],
-                  ),
-                ],
-              )
+                  ), */
+              ],
             );
           }
         },
@@ -99,56 +113,44 @@ class BulletHomeState extends State<BulletHome> {
     );
   }
 
-  Widget _buildDayRow(RowWithValue row) {
+  TableRow _buildDataRow(RowWithValue row) {
     // Render the value of the row only if it exists for this day.
-    Widget valueWidget = 
+    String valueString = 
       (row.value.isEmpty) ?
-      Text('') :
-      Text(
-        '${row.value} ${row.row.unitsForValueString(row.value)}',
-        style: Theme.of(context).textTheme.body1,
-      );
+      '' : '${row.value} ${row.row.unitsForValueString(row.value)}';
 
-    return 
-      Column(
-        children: [
-          Divider(),
+    return TableRow(
+      children: <Widget>[      
           GestureDetector(
             onTap: () { (row.value.isEmpty) ? _pushNewEntryScreen(row) : _pushDayDetailScreen(row); },
             child: Container(
-              child: Row(
-                children: [
-                  // Name of the row.
-                  Expanded(
-                    child: Text(
-                      row.row.name,
-                      style: Theme.of(context).textTheme.body1,
-                    ),
-                  ),
-                  // Value for today.
-                  Container(
-                    child: valueWidget,
-                    padding: EdgeInsets.symmetric(horizontal: 8.0),
-                  ),
-                  // Quick-add one to the row.
-                  // TODO: only show this for numeric rows (or show a popup text entry for non-numeric).
-                  Container(
-                    child: IconButton(
-                      onPressed: () { _quickAddToRow(row); },
-                      icon: Icon(Icons.plus_one),
-                      iconSize: 28.0,
-                    ),
-                  ),
-                  // Add an entry to the row.
-                  Container(
-                    child: IconButton(
-                      onPressed: () { _pushNewEntryScreen(row); },
-                      icon: Icon(Icons.add),
-                      iconSize: 28.0,
-                    ),
-                  ),
-                ],
+              child: Text(
+                row.row.name,
+                style: Theme.of(context).textTheme.body1,
               ),
+            ),
+          ),
+          // Value for today.
+          Container(
+            child: Text(
+              valueString,
+              style: Theme.of(context).textTheme.body1,
+            );,
+            padding: EdgeInsets.symmetric(horizontal: 8.0),
+          ),
+          // Quick-add one to the row.
+          // TODO: only show this for numeric rows (or show a popup text entry for non-numeric).
+          Container(
+            child: IconButton(
+              onPressed: () { _quickAddToRow(row); },
+              icon: Icon(Icons.plus_one),
+            ),
+          ),
+          // Add an entry to the row.
+          Container(
+            child: IconButton(
+              onPressed: () { _pushNewEntryScreen(row); },
+              icon: Icon(Icons.add),
             ),
           ),
         ],
