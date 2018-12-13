@@ -15,16 +15,13 @@ class NewBulletRowState extends State<NewBulletRow> {
 
   // The following fields correspond to the BulletRow model fields.
   String _rowName;
-  bool _accumulate;
+  MultiEntryHandling _multiEntryHandling;
+  RowType _type;
+  String _defaultValue;
+  String _minValue;
+  String _maxValue;
   String _units;
   String _comment;
-
-  // Shorthand to map user-visible types to String and int.
-  RowType _type;
-
-  NewBulletRowState() {
-    _accumulate = true;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,11 +82,48 @@ class NewBulletRowState extends State<NewBulletRow> {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.only(right: 150.0),
-                child: CheckboxListTile(
-                  title: const Text('Accumulate?'),
-                  value: _accumulate,
-                  onChanged: (bool value) { setState(() { _accumulate = value; }); },
+                padding: const EdgeInsets.only(top: 16.0),
+                child: Text(
+                  'Handling multiple values:', 
+                  style: Theme.of(context).textTheme.subhead,
+                ),
+              ),
+              Container(
+                child: Column(
+                  children: <Widget>[
+                    Flexible(
+                      child: RadioListTile<MultiEntryHandling>(
+                        title: const Text('Keep them separate'),
+                        value: MultiEntryHandling.Separate,
+                        groupValue: _multiEntryHandling,
+                        onChanged: (MultiEntryHandling value) { setState(() { _multiEntryHandling = value; }); },
+                      ),
+                    ),
+                    Flexible(
+                      child: RadioListTile<MultiEntryHandling>(
+                        title: const Text('Add them up'),
+                        value: MultiEntryHandling.Sum,
+                        groupValue: _multiEntryHandling,
+                        onChanged: (MultiEntryHandling value) { setState(() { _multiEntryHandling = value; }); },
+                      ),
+                    ),
+                    Flexible(
+                      child: RadioListTile<MultiEntryHandling>(
+                        title: const Text('Average them'),
+                        value: MultiEntryHandling.Average,
+                        groupValue: _multiEntryHandling,
+                        onChanged: (MultiEntryHandling value) { setState(() { _multiEntryHandling = value; }); },
+                      ),
+                    ),
+                    Flexible(
+                      child: RadioListTile<MultiEntryHandling>(
+                        title: const Text('Keep the most recent entry'),
+                        value: MultiEntryHandling.KeepLast,
+                        groupValue: _multiEntryHandling,
+                        onChanged: (MultiEntryHandling value) { setState(() { _multiEntryHandling = value; }); },
+                      ),
+                    ),
+                  ],
                 ),
               ),
               TextFormField(
@@ -100,6 +134,37 @@ class NewBulletRowState extends State<NewBulletRow> {
                 validator: (value) { },
                 onSaved: (String value) {
                   setState(() { _units = value; });
+                },
+              ),
+              TextFormField(
+                decoration: InputDecoration(
+                  labelText: 'Default value',
+                  helperText: 'The default value for new entries',
+                ),
+                validator: (value) { },
+                onSaved: (String value) {
+                  setState(() { _defaultValue = value; });
+                },
+              ),
+              // TODO: Show these in a row, and hide them when _rowType is not Number.
+              TextFormField(
+                decoration: InputDecoration(
+                  labelText: 'Min value',
+                  helperText: 'The minimum value allowed for an entry',
+                ),
+                validator: (value) { },
+                onSaved: (String value) {
+                  setState(() { _minValue = value; });
+                },
+              ),
+              TextFormField(
+                decoration: InputDecoration(
+                  labelText: 'Max value',
+                  helperText: 'The maximum value allowed for an entry',
+                ),
+                validator: (value) { },
+                onSaved: (String value) {
+                  setState(() { _maxValue = value; });
                 },
               ),
               TextFormField(
@@ -130,13 +195,16 @@ class NewBulletRowState extends State<NewBulletRow> {
     } else {
       form.save();
 
-      BulletRow row = new BulletRow(
+      // TODO: make defaultValue required for int fields
+      BulletRow row = BulletRow.rowFromStrings(
         _rowName,
-        [],
-        _accumulate,
+        _multiEntryHandling,
         _type,
+        _defaultValue,
+        _minValue,
+        _maxValue,
         _units,
-        _comment,
+        _comment
       );
 
       _showMessage('Saving Row...');
