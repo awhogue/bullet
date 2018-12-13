@@ -4,7 +4,7 @@ import 'package:bullet/datastore.dart';
 import 'package:bullet/util.dart';
 import 'day_row_detail.dart';
 import 'edit_entry.dart';
-import 'new_row.dart';
+import 'edit_row.dart';
 import 'settings.dart';
 
 class BulletHome extends StatefulWidget {
@@ -197,7 +197,7 @@ class BulletHomeState extends State<BulletHome> {
   }
 
   void _pushNewRowScreen() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => NewBulletRow()));
+    Navigator.push(context, MaterialPageRoute(builder: (context) => EditBulletRow()));
   }
 
   void _pushDayDetailScreen(RowWithValue row) {

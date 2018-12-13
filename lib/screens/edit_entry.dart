@@ -29,7 +29,6 @@ class EditBulletEntryState extends State<EditBulletEntry> {
     if (null != widget.entry) {
       _enteredValue = widget.entry.value.toString();
       _enteredComment = widget.entry.comment;
-      print('EditBulletEntryState.build() with entry ${widget.entry.toString()}');
     }
 
     return Scaffold(

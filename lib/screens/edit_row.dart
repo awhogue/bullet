@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:bullet/model/bullet_row.dart';
 import 'package:bullet/datastore.dart';
 
-class NewBulletRow extends StatefulWidget {
+class EditBulletRow extends StatefulWidget {
+  final BulletRow row;
+  EditBulletRow([this.row]);
   @override
-  State<StatefulWidget> createState() => NewBulletRowState();
+  State<StatefulWidget> createState() => EditBulletRowState();
 }
 
-class NewBulletRowState extends State<NewBulletRow> {
+class EditBulletRowState extends State<EditBulletRow> {
   BulletDatastore _datastore = new BulletDatastore();
   
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -25,6 +27,22 @@ class NewBulletRowState extends State<NewBulletRow> {
 
   @override
   Widget build(BuildContext context) {
+    if (null == this._type) {
+      if (null != widget.row) {
+        this._rowName = widget.row.name;
+        this._multiEntryHandling = widget.row.multiEntryHandling;
+        this._type = widget.row.type;
+        this._defaultValue = widget.row.defaultValue;
+        this._minValue = widget.row.minValue;
+        this._maxValue = widget.row.maxValue;
+        this._units = widget.row.units;
+        this._comment = widget.row.comment;
+      } else {
+        this._type = RowType.Number;
+        this._multiEntryHandling = MultiEntryHandling.Sum;
+      }
+    }
+
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -37,6 +55,7 @@ class NewBulletRowState extends State<NewBulletRow> {
             padding: const EdgeInsets.symmetric(horizontal: 10.0),
             children: <Widget>[
               TextFormField(
+                initialValue: _rowName,
                 decoration: InputDecoration(
                   labelText: 'Row Name',
                   helperText: 'E.g. "Coffee" or "Work out"',
@@ -53,7 +72,7 @@ class NewBulletRowState extends State<NewBulletRow> {
                 },
               ),
               Container(
-                padding: const EdgeInsets.only(top: 16.0),
+                padding: const EdgeInsets.only(top: 12.0),
                 child: Text(
                   'Row Type', 
                   style: Theme.of(context).textTheme.subhead,
@@ -64,25 +83,34 @@ class NewBulletRowState extends State<NewBulletRow> {
                   children: [
                     Flexible(
                       child: RadioListTile<RowType>(
-                        title: const Text('Text'),
-                        value: RowType.Text,
-                        groupValue: _type,
-                        onChanged: (RowType value) { setState(() { _type = value; }); },
-                      ),
-                    ),
-                    Flexible(
-                      child: RadioListTile<RowType>(
                         title: const Text('Number'),
                         value: RowType.Number,
                         groupValue: _type,
                         onChanged: (RowType value) { setState(() { _type = value; }); },
                       ),
                     ),
+                    Flexible(
+                      child: RadioListTile<RowType>(
+                        title: const Text('Text'),
+                        value: RowType.Text,
+                        groupValue: _type,
+                        onChanged: (RowType value) {
+                          setState(() { 
+                            _type = value; 
+                            // Reset multi-entry handling radio for non-numeric values.
+                            if (_multiEntryHandling == MultiEntryHandling.Average || 
+                                _multiEntryHandling == MultiEntryHandling.Sum) {
+                              _multiEntryHandling = MultiEntryHandling.Separate;
+                            }
+                          });
+                        },
+                      ),
+                    ),
                   ],
                 ),
               ),
               Container(
-                padding: const EdgeInsets.only(top: 16.0),
+                padding: const EdgeInsets.symmetric(vertical: 12.0),
                 child: Text(
                   'Handling multiple values:', 
                   style: Theme.of(context).textTheme.subhead,
@@ -90,34 +118,45 @@ class NewBulletRowState extends State<NewBulletRow> {
               ),
               Container(
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
-                    Flexible(
+                    Visibility(
+                      visible: (_type == RowType.Number),
+                      child: Container(
+                        child: RadioListTile<MultiEntryHandling>(
+                          dense: true,
+                          title: Text('Add them up', style: Theme.of(context).textTheme.subhead),
+                          value: MultiEntryHandling.Sum,
+                          groupValue: _multiEntryHandling,
+                          onChanged: (MultiEntryHandling value) { setState(() { _multiEntryHandling = value; }); },
+                        ),
+                      ),
+                    ),
+                    Visibility(
+                      visible: (_type == RowType.Number),
+                      child: Container(
+                        child: RadioListTile<MultiEntryHandling>(
+                          dense: true,
+                          title: Text('Average them', style: Theme.of(context).textTheme.subhead),
+                          value: MultiEntryHandling.Average,
+                          groupValue: _multiEntryHandling,
+                          onChanged: (MultiEntryHandling value) { setState(() { _multiEntryHandling = value; }); },
+                        ),
+                      ),
+                    ),
+                    Container(
                       child: RadioListTile<MultiEntryHandling>(
-                        title: const Text('Keep them separate'),
+                        dense: true,
+                        title: Text('Keep them separate', style: Theme.of(context).textTheme.subhead),
                         value: MultiEntryHandling.Separate,
                         groupValue: _multiEntryHandling,
                         onChanged: (MultiEntryHandling value) { setState(() { _multiEntryHandling = value; }); },
                       ),
                     ),
-                    Flexible(
+                    Container(
                       child: RadioListTile<MultiEntryHandling>(
-                        title: const Text('Add them up'),
-                        value: MultiEntryHandling.Sum,
-                        groupValue: _multiEntryHandling,
-                        onChanged: (MultiEntryHandling value) { setState(() { _multiEntryHandling = value; }); },
-                      ),
-                    ),
-                    Flexible(
-                      child: RadioListTile<MultiEntryHandling>(
-                        title: const Text('Average them'),
-                        value: MultiEntryHandling.Average,
-                        groupValue: _multiEntryHandling,
-                        onChanged: (MultiEntryHandling value) { setState(() { _multiEntryHandling = value; }); },
-                      ),
-                    ),
-                    Flexible(
-                      child: RadioListTile<MultiEntryHandling>(
-                        title: const Text('Keep the most recent entry'),
+                        dense: true,
+                        title: Text('Keep the most recent entry', style: Theme.of(context).textTheme.subhead),
                         value: MultiEntryHandling.KeepLast,
                         groupValue: _multiEntryHandling,
                         onChanged: (MultiEntryHandling value) { setState(() { _multiEntryHandling = value; }); },
@@ -127,6 +166,7 @@ class NewBulletRowState extends State<NewBulletRow> {
                 ),
               ),
               TextFormField(
+                initialValue: _units,
                 decoration: InputDecoration(
                   labelText: 'Units',
                   helperText: 'E.g. "mg" or "hours"',
@@ -137,6 +177,7 @@ class NewBulletRowState extends State<NewBulletRow> {
                 },
               ),
               TextFormField(
+                initialValue: _defaultValue,
                 decoration: InputDecoration(
                   labelText: 'Default value',
                   helperText: 'The default value for new entries',
@@ -147,27 +188,36 @@ class NewBulletRowState extends State<NewBulletRow> {
                 },
               ),
               // TODO: Show these in a row, and hide them when _rowType is not Number.
-              TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Min value',
-                  helperText: 'The minimum value allowed for an entry',
+              Visibility(
+                visible: (_type == RowType.Number),
+                child: TextFormField(
+                  initialValue: _minValue,
+                  decoration: InputDecoration(
+                    labelText: 'Min value',
+                    helperText: 'The minimum value allowed for an entry',
+                  ),
+                  validator: (value) { },
+                  onSaved: (String value) {
+                    setState(() { _minValue = value; });
+                  },
                 ),
-                validator: (value) { },
-                onSaved: (String value) {
-                  setState(() { _minValue = value; });
-                },
+              ),
+              Visibility(
+                visible: (_type == RowType.Number),
+                child: TextFormField(
+                  initialValue: _maxValue,
+                  decoration: InputDecoration(
+                    labelText: 'Max value',
+                    helperText: 'The maximum value allowed for an entry',
+                  ),
+                  validator: (value) { },
+                  onSaved: (String value) {
+                    setState(() { _maxValue = value; });
+                  },
+                ),
               ),
               TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Max value',
-                  helperText: 'The maximum value allowed for an entry',
-                ),
-                validator: (value) { },
-                onSaved: (String value) {
-                  setState(() { _maxValue = value; });
-                },
-              ),
-              TextFormField(
+                initialValue: _comment,
                 decoration: InputDecoration(
                   border: InputBorder.none,
                   labelText: 'Comment',
